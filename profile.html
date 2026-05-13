@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - ClanHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 1. INSTAGRAM PROFILE HEADER BOX CONTAINER -->
+  <div class="box" style="padding-bottom: 20px;">
+    <h2 class="profile-main-title">Profile</h2>
+    
+    <div class="instagram-header">
+      <div class="profile-avatar-wrapper">
+        👤
+        <div class="online-badge"></div>
+      </div>
+
+      <div class="stats-container">
+        <div class="stat-item"><span class="stat-value">14</span><span class="stat-label">Clans</span></div>
+        <div class="stat-item"><span class="stat-value">342</span><span class="stat-label">Karmas</span></div>
+        <div class="stat-item"><span class="stat-value">Active</span><span class="stat-label">Status</span></div>
+      </div>
+    </div>
+
+    <div class="user-bio-container">
+      <p id="user-full-name">Loading profile...</p>
+      <p id="user-member-id">Clan Member ID = ...</p>
+    </div>
+  </div>
+
+  <!-- 2. APP PRIVACY CONFIGURATIONS OUTSIDE CARD -->
+  <div class="outside-card">
+    <div class="setting-title">⚙️ App Privacy Configurations</div>
+    
+    <div class="setting-row">
+      <span>Ghost Discovery Mode</span>
+      <label class="switch">
+        <input type="checkbox" id="ghost-mode">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <span>Push Notifications</span>
+      <label class="switch">
+        <input type="checkbox" id="push-notif" checked>
+        <span class="slider"></span>
+      </label>
+    </div>
+    
+    <div class="setting-row">
+      <span>Data Stream Encryption</span>
+      <label class="switch">
+        <input type="checkbox" id="db-enc" checked disabled>
+        <span class="slider" style="opacity: 0.6; cursor: not-allowed;"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- 3. STANDALONE SIGN OUT ACTION BUTTON -->
+  <button class="btn-signout-standalone" onclick="logout()">
+    Sign Out Session
+  </button>
+
+  <script src="app.js"></script>
+  <script>
+    const usernameToken = checkAuth();
+    
+    if (usernameToken) {
+      if (usernameToken === "admin") {
+        document.getElementById("user-full-name").innerText = "Administrator Account";
+        document.getElementById("user-member-id").innerText = "Clan Member ID = admin";
+      } else {
+        fetch(`${API_URL}/users/${usernameToken}`)
+          .then(res => {
+            if (!res.ok) throw new Error("Database link error");
+            return res.json();
+          })
+          .then(data => {
+            if (data.name) {
+              document.getElementById("user-full-name").innerText = data.name;
+              document.getElementById("user-member-id").innerText = "Clan Member ID = " + usernameToken;
+            } else {
+              fallbackFormat();
+            }
+          })
+          .catch((err) => {
+            console.error("Profile payload resolution catch:", err);
+            fallbackFormat();
+          });
+      }
+    }
+
+    function fallbackFormat() {
+      if(usernameToken) {
+        document.getElementById("user-full-name").innerText = usernameToken.charAt(0).toUpperCase() + usernameToken.slice(1);
+        document.getElementById("user-member-id").innerText = "Clan Member ID = " + usernameToken;
+      }
+    }
+
+    // Initialize navbar
+    loadNavbar('profile');
+  </script>
+</body>
+</html>

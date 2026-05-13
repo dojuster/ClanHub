@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClanHub - Authentication</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- EmailJS SDK Integration -->
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+</head>
+<body>
+
+  <div class="box">
+    <!-- Main Dynamic Headers -->
+    <h2 id="auth-title">ClanHub Login</h2>
+    <p id="auth-subtitle" style="font-size: 13px; color: #94a3b8; margin: -15px 0 15px 0;" class="hidden-state">
+      Create your local network identity
+    </p>
+
+    <!-- REGISTER FIELDS CONTAINER -->
+    <div id="registration-only-fields" class="hidden-state">
+      <input type="text" id="reg-name" placeholder="Full Name">
+      <input type="text" id="reg-contact" placeholder="Email Address">
+    </div>
+
+    <!-- LOGIN / SHARED CREDENTIAL FIELDS -->
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <!-- PRO OTP LAYER AND BOT CHECK OVERLAYS -->
+    <div id="otp-and-verify-block" class="hidden-state">
+      <div class="otp-layout-grid">
+        <input type="text" id="reg-otp" placeholder="Enter OTP Code" class="otp-input-field" style="margin: 0;">
+        <button type="button" class="btn-otp-action" onclick="sendRealOTP()">Send OTP</button>
+      </div>
+
+      <label class="human-checkbox-row">
+        <input type="checkbox" id="human-verify">
+        <span>I am a human verification check</span>
+      </label>
+    </div>
+
+    <!-- PRIMARY DYNAMIC TRANSACTION ACTION BUTTONS -->
+    <button id="btn-login-submit" onclick="login()">Login</button>
+    <button id="btn-register-submit" class="hidden-state" onclick="handleRegister()">Register Account</button>
+
+    <!-- SYSTEM ALERTS INTERFACE VIEW -->
+    <p id="msg"></p>
+
+    <!-- PROFESSIONALLY DESIGNED TOGGLE STATE CONTROLLER FOOTER -->
+    <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; font-size: 14px; color: #94a3b8;">
+      <span id="footer-text">Don't have an account?</span>
+      <a href="#" id="footer-link" onclick="toggleFormState(event)" style="color: #6366f1; text-decoration: none; font-weight: 600; margin-left: 5px; transition: color 0.2s;">
+        Register
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Load global app.js backend logic matrices -->
+  <script src="app.js"></script>
+</body>
+</html>

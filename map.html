@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Clan Hub - Free Radar</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { height: 100%; width: 100%; font-family: system-ui, sans-serif; overflow: hidden; background: #0f172a; }
+    #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: #242f3e; }
+
+    .locate-btn {
+      position: absolute; right: 20px; top: 40px; width: 50px; height: 50px;
+      background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 1002; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      font-size: 24px; transition: all 0.2s ease;
+    }
+    .locate-btn:active { transform: scale(0.9); background: #6366f1; }
+
+    .distance-panel {
+      position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%);
+      background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(20px);
+      width: 90%; max-width: 360px; padding: 20px; border-radius: 22px;
+      display: none; z-index: 1001; border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); color: white;
+    }
+    .km-badge { background: #6366f1; color: white; padding: 6px 12px; border-radius: 12px; display: inline-block; margin-top: 12px; font-weight: 700; }
+
+    :root { --nav-height: 68px; --nav-active-color: #6366f1; --nav-text-color: #94a3b8; }
+    .bottom-nav { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 420px; height: var(--nav-height); background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 22px; display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--nav-text-color); font-size: 11px; font-weight: 600; flex: 1; }
+    .nav-item.active { color: var(--nav-active-color); }
+    .nav-icon { font-size: 22px; margin-bottom: 3px; }
+  </style>
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <div class="locate-btn" onclick="updateLocation(true)">🎯</div>
+
+  <div class="distance-panel" id="dist-panel">
+    <h3 id="target-name">Location</h3>
+    <p id="target-address" style="font-size:13px; color:#94a3b8;">Scanning distance...</p>
+    <div class="km-badge" id="km-val">0 km</div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js" defer></script>
+
+  <script>
+    let map;
+    let userMarker;
+    let currentPos = [0, 0]; // Start at 0,0 until GPS works
+
+    function initMap() {
+      // Create map instance
+      map = L.map('map', { zoomControl: false, attributionControl: false }).setView([20, 0], 2);
+
+      // Add Dark Tiles
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
+
+      // Create a blue dot for the user
+      userMarker = L.circleMarker([0, 0], {
+        radius: 10, fillColor: "#6366f1", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
+      }).addTo(map);
+
+      // Add a static clan marker for testing
+      const clanPos = [22.7600, 75.9000];
+      L.marker(clanPos).addTo(map).on('click', () => {
+        const distMeters = map.distance(userMarker.getLatLng(), clanPos);
+        document.getElementById("target-name").innerText = "Clan Alpha HQ";
+        document.getElementById("km-val").innerText = (distMeters / 1000).toFixed(2) + " km away";
+        document.getElementById("dist-panel").style.display = "block";
+        map.flyTo(clanPos, 15);
+      });
+
+      // 🔥 Request GPS immediately
+      updateLocation(true);
+    }
+
+    function updateLocation(shouldFly = false) {
+      if (!navigator.geolocation) {
+        alert("GPS not supported on this browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          currentPos = [lat, lng];
+
+          userMarker.setLatLng(currentPos);
+
+          if (shouldFly) {
+            document.getElementById("dist-panel").style.display = "none";
+            map.flyTo(currentPos, 16);
+          }
+        },
+        (error) => {
+          console.error(error);
+          alert("GPS Error: Please enable location and use HTTPS.");
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initMap();
+      if (typeof checkAuth === "function" && checkAuth()) {
+        loadNavbar('map');
+      }
+    });
+  </script>
+</body>
+</html>

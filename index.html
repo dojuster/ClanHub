@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - ClanHub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <header class="header-card">
+      <div class="welcome-text">
+        <h1>ClanHub Feed</h1>
+        <p>Welcome, <span id="user-display">Guest</span>!</p>
+      </div>
+    </header>
+
+    <main class="feed-card">
+      <div class="empty-state-icon">🌐</div>
+      <h2>Your Social Feed</h2>
+      <p>Explore hot discussions within your clan circles.</p>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // Use the updated global security check function
+    const user = checkAuth();
+    if (user) {
+      document.getElementById("user-display").textContent = user;
+    }
+    
+    // Inject the navbar
+    loadNavbar('home');
+  </script>
+</body>
+</html>
