@@ -1,7 +1,29 @@
-// ---- ClanHub Central Application Logic & Session Manager ----
+// ---- ClanHub Central Application Logic & Firebase Manager ----
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signInWithPhoneNumber, RecaptchaVerifier 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 
-// The dedicated API gateway routing directly to your background Node/SQLite server engine
-const API_URL = "http://192.168.1.6:3000/api"; 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCUM-UWPTMi_lVSOROrzkkp5ceZrh67Ev0",
+  authDomain: "clanhub-82f8c.firebaseapp.com",
+  databaseURL: "https://clanhub-82f8c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "clanhub-82f8c",
+  storageBucket: "clanhub-82f8c.firebasestorage.app",
+  messagingSenderId: "690675796813",
+  appId: "1:690675796813:web:9cbafb424391ef258a8504",
+  measurementId: "G-BSRLFBJ4GH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 function getBasePath() {
   const loc = window.location;
@@ -9,183 +31,116 @@ function getBasePath() {
 }
 
 /* ========================================================
-   🔑 SECURE AUTHENTICATION SYSTEM LOGIC WITH MULTI-ACC
+   🔑 SECURE AUTHENTICATION SYSTEM (FIREBASE)
 ======================================================== */
-async function login() {
+window.login = async function() {
   const msg = document.getElementById("msg");
-  const user = document.getElementById("username").value.trim();
+  const email = document.getElementById("username").value.trim();
   const pass = document.getElementById("password").value;
 
-  if (!user || !pass) {
+  if (!email || !pass) {
     msg.innerText = "Please complete all login fields.";
     msg.style.color = "#f87171";
     return;
   }
 
-  // Master hardcoded bypass key credentials
-  if (user === "admin" && pass === "1234") {
-    let sessions = JSON.parse(localStorage.getItem("active_sessions")) || [];
-    if (!sessions.includes(user)) { sessions.push(user); }
-    localStorage.setItem("active_sessions", JSON.stringify(sessions));
-    localStorage.setItem("user", user);
-    window.location.href = getBasePath() + "index.html";
+  // Bypass for testing
+  if (email === "admin" && pass === "1234") {
+    handleSessionMapping("admin");
     return;
   }
 
   try {
-    // Asynchronous network delivery to the sqlite endpoint
-    const res = await fetch(`${API_URL}/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, password: pass })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      // 🚀 FIXED: MULTI-ACCOUNT MANAGEMENT ENGINE LAYER
-      let sessions = JSON.parse(localStorage.getItem("active_sessions")) || [];
-      
-      // Inject username token into storage list array if not present
-      if (!sessions.includes(data.username)) {
-        sessions.push(data.username);
-      }
-      
-      localStorage.setItem("active_sessions", JSON.stringify(sessions));
-      localStorage.setItem("user", data.username); // Set as currently active session view
-      
-      window.location.href = getBasePath() + "index.html";
-    } else {
-      msg.innerText = data.error || "Invalid username or password configuration.";
-      msg.style.color = "#f87171";
-    }
-  } catch (err) {
-    msg.innerText = "Connection failed. Is server.js active on port 3000?";
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    handleSessionMapping(userCredential.user.email);
+  } catch (error) {
+    msg.innerText = "Login failed: " + error.message;
     msg.style.color = "#f87171";
-    console.error("Fetch login error:", err);
   }
 }
 
-/* ========================================================
-   💾 CENTRALIZED DATABASE REGISTRATION HANDLER
-======================================================== */
-async function handleRegister() {
-  const msg = document.getElementById("msg");
-  
-  const name = document.getElementById("reg-name").value;
-  const user = document.getElementById("username").value.trim(); 
-  const pass = document.getElementById("password").value;
-  const contact = document.getElementById("reg-contact").value;
-  const otp = document.getElementById("reg-otp").value;
-  const isHuman = document.getElementById("human-verify").checked;
-
-  // Frontend validation checks before reaching network
-  if (!name || !user || !pass || !otp) {
-    msg.innerText = "Please complete all fields!";
-    msg.style.color = "#f87171";
-    return;
-  }
-  if (!isHuman) {
-    msg.innerText = "Please check the human verification box!";
-    msg.style.color = "#f87171";
-    return;
-  }
-  if (otp !== dynamicSessionOTP) {
-    msg.innerText = "Invalid verification OTP code!";
-    msg.style.color = "#f87171";
-    return;
-  }
-
-  try {
-    // Pushes registration parameters cleanly to the Node server database
-    const res = await fetch(`${API_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, username: user, password: pass, contact: contact })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      msg.innerText = "Registration successful!";
-      msg.style.color = "lime";
-      
-      // Flush inputs cleanly
-      document.getElementById("reg-name").value = "";
-      document.getElementById("reg-contact").value = "";
-      document.getElementById("reg-otp").value = "";
-      document.getElementById("password").value = "";
-      document.getElementById("username").value = "";
-      document.getElementById("human-verify").checked = false;
-      dynamicSessionOTP = null;
-
-      setTimeout(() => { 
-        toggleFormState(); 
-      }, 1500);
-    } else {
-      msg.innerText = data.error || "Registration database error encountered.";
-      msg.style.color = "#f87171";
-    }
-  } catch (err) {
-    msg.innerText = "Could not link payload profile to central database node.";
-    msg.style.color = "#f87171";
-    console.error("Fetch registration error:", err);
-  }
-}
-
-/* ========================================================
-   🚪 CLEAN MULTI-ACCOUNT SIGN OUT INTERACTIVE REBOOTS
-======================================================== */
-function logout() {
-  let activeUser = localStorage.getItem("user");
+function handleSessionMapping(username) {
   let sessions = JSON.parse(localStorage.getItem("active_sessions")) || [];
-  
-  // Clean active user out of multi-account session memory array
-  sessions = sessions.filter(u => u !== activeUser);
+  if (!sessions.includes(username)) { sessions.push(username); }
   localStorage.setItem("active_sessions", JSON.stringify(sessions));
+  localStorage.setItem("user", username);
+  window.location.href = getBasePath() + "index.html";
+}
 
-  if (sessions.length > 0) {
-    localStorage.setItem("user", sessions[0]); // Swap automatically to remaining active account token link
-    window.location.reload();
-  } else {
+/* ========================================================
+   💾 FIREBASE REGISTRATION & OTP HANDLER
+======================================================== */
+window.sendOTP = async function() {
+  const phone = document.getElementById("reg-contact").value;
+  const msg = document.getElementById("msg");
+
+  // ReCAPTCHA is required for Phone Auth security
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
+  
+  try {
+    window.confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+    msg.innerText = "OTP Sent!";
+    msg.style.color = "lime";
+  } catch (error) {
+    msg.innerText = "SMS Error: " + error.message;
+    msg.style.color = "#f87171";
+  }
+}
+
+window.handleRegister = async function() {
+  const msg = document.getElementById("msg");
+  const email = document.getElementById("username").value.trim();
+  const pass = document.getElementById("password").value;
+  const name = document.getElementById("reg-name").value;
+  const otp = document.getElementById("reg-otp").value;
+
+  try {
+    // 1. Verify OTP first
+    const phoneResult = await window.confirmationResult.confirm(otp);
+    const verifiedUser = phoneResult.user;
+
+    // 2. Create the Email Account
+    const emailResult = await createUserWithEmailAndPassword(auth, email, pass);
+    const finalUser = emailResult.user;
+
+    // 3. Save combined profile to Firestore
+    await setDoc(doc(db, "users", finalUser.uid), {
+      name: name,
+      email: email,
+      phone: verifiedUser.phoneNumber,
+      uid: finalUser.uid,
+      role: "member",
+      created_at: new Date()
+    });
+
+    msg.innerText = "Registration Success!";
+    msg.style.color = "lime";
+    setTimeout(() => { handleSessionMapping(email); }, 1500);
+  } catch (err) {
+    msg.innerText = "Error: " + err.message;
+    msg.style.color = "#f87171";
+  }
+}
+
+/* ========================================================
+   🚪 NAVIGATION & LOGOUT
+======================================================== */
+window.logout = function() {
+  auth.signOut().then(() => {
     localStorage.removeItem("user");
     localStorage.removeItem("active_sessions");
     window.location.href = getBasePath() + "login.html";
-  }
+  });
 }
 
-function checkAuth() {
-  const loggedInUser = localStorage.getItem("user");
-  if (!loggedInUser) {
-    window.location.href = getBasePath() + "login.html";
-    return null;
-  }
-  return loggedInUser;
-}
-
-/* ========================================================
-   🌐 DYNAMIC FLUID BOTTOM NAVIGATION BAR DRAWER ARCHITECTURE
-======================================================== */
-function loadNavbar(activeTab) {
+window.loadNavbar = function(activeTab) {
   const base = getBasePath();
   const navHTML = `
     <nav class="bottom-nav">
-      <a href="${base}index.html" class="nav-item ${activeTab === 'home' ? 'active' : ''}">
-        <span class="nav-icon">🏠</span>
-        <span>Home</span>
-      </a>
-      <a href="${base}map.html" class="nav-item ${activeTab === 'map' ? 'active' : ''}">
-        <span class="nav-icon">🗺️</span>
-        <span>Radar</span>
-      </a>
-      <a href="${base}chat.html" class="nav-item ${activeTab === 'chat' ? 'active' : ''}">
-        <span class="nav-icon">💬</span>
-        <span>Chat</span>
-      </a>
-      <a href="${base}profile.html" class="nav-item ${activeTab === 'profile' ? 'active' : ''}">
-        <span class="nav-icon">👤</span>
-        <span>Profile</span>
-      </a>
+      <a href="${base}index.html" class="nav-item ${activeTab === 'home' ? 'active' : ''}"><span>🏠 Home</span></a>
+      <a href="${base}map.html" class="nav-item ${activeTab === 'map' ? 'active' : ''}"><span>🗺️ Radar</span></a>
+      <a href="${base}chat.html" class="nav-item ${activeTab === 'chat' ? 'active' : ''}"><span>💬 Chat</span></a>
+      <a href="${base}profile.html" class="nav-item ${activeTab === 'profile' ? 'active' : ''}"><span>👤 Profile</span></a>
     </nav>
   `;
   document.body.insertAdjacentHTML('beforeend', navHTML);

@@ -6,8 +6,7 @@
   <title>ClanHub - Authentication</title>
   <link rel="stylesheet" href="style.css">
   
-  <!-- EmailJS SDK Integration -->
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <!-- Note: We are removing EmailJS as Firebase handles the OTP logic directly -->
 </head>
 <body>
 
@@ -21,19 +20,25 @@
     <!-- REGISTER FIELDS CONTAINER -->
     <div id="registration-only-fields" class="hidden-state">
       <input type="text" id="reg-name" placeholder="Full Name">
-      <input type="text" id="reg-contact" placeholder="Email Address">
+      <!-- Firebase Phone Auth needs the phone number here -->
+      <input type="text" id="reg-contact" placeholder="Phone (e.g. +919876543210)">
     </div>
 
     <!-- LOGIN / SHARED CREDENTIAL FIELDS -->
-    <input type="text" id="username" placeholder="Username">
+    <!-- Use Email for Username field to work with Firebase Auth -->
+    <input type="text" id="username" placeholder="Email Address">
     <input type="password" id="password" placeholder="Password">
 
     <!-- PRO OTP LAYER AND BOT CHECK OVERLAYS -->
     <div id="otp-and-verify-block" class="hidden-state">
       <div class="otp-layout-grid">
         <input type="text" id="reg-otp" placeholder="Enter OTP Code" class="otp-input-field" style="margin: 0;">
-        <button type="button" class="btn-otp-action" onclick="sendRealOTP()">Send OTP</button>
+        <!-- Updated to call the Firebase sendOTP function -->
+        <button type="button" class="btn-otp-action" onclick="sendOTP()">Send OTP</button>
       </div>
+
+      <!-- Firebase Recaptcha Container (Required for Phone Auth) -->
+      <div id="recaptcha-container"></div>
 
       <label class="human-checkbox-row">
         <input type="checkbox" id="human-verify">
@@ -48,17 +53,34 @@
     <!-- SYSTEM ALERTS INTERFACE VIEW -->
     <p id="msg"></p>
 
-    <!-- PROFESSIONALLY DESIGNED TOGGLE STATE CONTROLLER FOOTER -->
+    <!-- TOGGLE STATE CONTROLLER FOOTER -->
     <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; font-size: 14px; color: #94a3b8;">
       <span id="footer-text">Don't have an account?</span>
-      <a href="#" id="footer-link" onclick="toggleFormState(event)" style="color: #6366f1; text-decoration: none; font-weight: 600; margin-left: 5px; transition: color 0.2s;">
+      <a href="#" id="footer-link" onclick="toggleFormState(event)" style="color: #6366f1; text-decoration: none; font-weight: 600; margin-left: 5px;">
         Register
       </a>
     </div>
 
   </div>
 
-  <!-- Load global app.js backend logic matrices -->
-  <script src="app.js"></script>
+  <!-- 🚀 CRITICAL: type="module" allows the use of 'import' in app.js -->
+  <script type="module" src="app.js"></script>
+
+  <script>
+    // Logic for toggling between Login and Register views
+    function toggleFormState(e) {
+      if(e) e.preventDefault();
+      const isLogin = document.getElementById("auth-title").innerText === "ClanHub Login";
+      
+      document.getElementById("auth-title").innerText = isLogin ? "Create Account" : "ClanHub Login";
+      document.getElementById("auth-subtitle").classList.toggle("hidden-state");
+      document.getElementById("registration-only-fields").classList.toggle("hidden-state");
+      document.getElementById("otp-and-verify-block").classList.toggle("hidden-state");
+      document.getElementById("btn-login-submit").classList.toggle("hidden-state");
+      document.getElementById("btn-register-submit").classList.toggle("hidden-state");
+      document.getElementById("footer-text").innerText = isLogin ? "Already have an account?" : "Don't have an account?";
+      document.getElementById("footer-link").innerText = isLogin ? "Login" : "Register";
+    }
+  </script>
 </body>
 </html>
