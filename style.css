@@ -280,10 +280,16 @@ button:active {
 }
 
 .bottom-nav {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     z-index: 9999;
+    display: flex;
+    justify-content: space-around;
+    background: rgba(15, 15, 15, 0.8); /* Adjust to your theme */
+    backdrop-filter: blur(10px);
+    padding: 10px 0;
 }
 
 /* Nav Link Items Core Architecture */
