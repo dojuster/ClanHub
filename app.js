@@ -25,7 +25,6 @@ const formatEmail = (username) => username.includes('@') ? username : `${usernam
 
 function getBasePath() {
   const loc = window.location;
-  // This helps GitHub Pages handle the subfolder /ClanHub/ correctly
   return loc.origin + loc.pathname.substring(0, loc.pathname.lastIndexOf('/')) + '/';
 }
 
@@ -44,58 +43,11 @@ window.login = async function() {
 
   try {
     await signInWithEmailAndPassword(auth, formatEmail(userInp), pass);
-    // Success redirect is handled by onAuthStateChanged below
   } catch (error) {
     msg.innerText = "Login failed: " + error.message;
   }
 }
 
-/* ========================================================
-   💾 REGISTRATION & OTP
-======================================================== */
-window.sendOTP = async function() {
-  const phone = document.getElementById("reg-contact").value.trim();
-  const msg = document.getElementById("msg");
-
-  if(!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
-  }
-  
-  try {
-    window.confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-    msg.innerText = "OTP Sent!";
-    msg.style.color = "lime";
-  } catch (error) {
-    msg.innerText = "Error: " + error.message;
-  }
-}
-
-window.handleRegister = async function() {
-  const msg = document.getElementById("msg");
-  const userInp = document.getElementById("username").value.trim();
-  const pass = document.getElementById("password").value;
-  const name = document.getElementById("reg-name").value;
-  const otp = document.getElementById("reg-otp").value;
-
-  try {
-    const phoneResult = await window.confirmationResult.confirm(otp);
-    const authResult = await createUserWithEmailAndPassword(auth, formatEmail(userInp), pass);
-
-    await setDoc(doc(db, "users", authResult.user.uid), {
-      username: userInp,
-      name: name,
-      phone: phoneResult.user.phoneNumber,
-      uid: authResult.user.uid,
-      created_at: new Date()
-    });
-  } catch (err) {
-    msg.innerText = "Error: " + err.message;
-  }
-}
-
-/* ========================================================
-   🌐 DYNAMIC NAVBAR
-======================================================== */
 window.logout = function() {
   auth.signOut().then(() => {
     localStorage.clear();
@@ -103,76 +55,64 @@ window.logout = function() {
   });
 }
 
-window.loadNavbar = function(activeTab) {
-  if (document.querySelector('.bottom-nav')) return;
-  const base = getBasePath();
-  const navHTML = `
-    <nav class="bottom-nav">
-      <a href="${base}index.html" class="nav-item ${activeTab === 'home' ? 'active' : ''}">
-        <span class="nav-icon">🏠</span><span>Home</span>
-      </a>
-      <a href="${base}map.html" class="nav-item ${activeTab === 'map' ? 'active' : ''}">
-        <span class="nav-icon">🗺️</span><span>Radar</span>
-      </a>
-      <a href="${base}chat.html" class="nav-item ${activeTab === 'chat' ? 'active' : ''}">
-        <span class="nav-icon">💬</span><span>Chat</span>
-      </a>
-      <a href="${base}profile.html" class="nav-item ${activeTab === 'profile' ? 'active' : ''}">
-        <span class="nav-icon">👤</span><span>Profile</span>
-      </a>
-    </nav>`;
-  document.body.insertAdjacentHTML('beforeend', navHTML);
-}
 /* ========================================================
-   🛡️ AUTH OBSERVER (STRICT ENFORCEMENT)
+   🚀 STATIC NAV LOADER (FETCH METHOD)
+======================================================== */
+async function injectNavbar() {
+    const placeholder = document.getElementById('navbar-placeholder');
+    if (!placeholder || document.querySelector('.bottom-nav')) return;
+
+    try {
+        const base = getBasePath();
+        const response = await fetch(base + 'nav.html');
+        if (!response.ok) throw new Error("Nav file not found");
+        
+        const navContent = await response.text();
+        placeholder.innerHTML = navContent;
+
+        // Apply active class based on URL
+        const path = window.location.pathname;
+        const page = path.split("/").pop();
+        const isRoot = page === "" || page === "index.html" || page === "ClanHub" || path.endsWith('/');
+
+        if (isRoot) document.getElementById('nav-home')?.classList.add('active');
+        else if (page.includes('map')) document.getElementById('nav-map')?.classList.add('active');
+        else if (page.includes('chat')) document.getElementById('nav-chat')?.classList.add('active');
+        else if (page.includes('profile')) document.getElementById('nav-profile')?.classList.add('active');
+
+    } catch (err) {
+        console.error("Navbar Injection Failed:", err);
+    }
+}
+
+/* ========================================================
+   🛡️ AUTH OBSERVER
 ======================================================== */
 onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
     const page = path.split("/").pop();
-    
-    // DEBUG: Open your browser console (F12) to see these values!
-    console.log("Current Path:", path);
-    console.log("Detected Page String:", page);
-
     const isLoginPage = page === "login.html";
-    // Checks for empty string, index.html, or just the repo folder name
-    const isRoot = page === "" || page === "index.html" || page === "ClanHub" || path.endsWith('/');
 
     if (!user) {
-        if (!isLoginPage) {
-            window.location.replace(getBasePath() + "login.html");
-        }
+        if (!isLoginPage) window.location.replace(getBasePath() + "login.html");
     } else {
-        if (isLoginPage) {
-            window.location.replace(getBasePath() + "index.html");
-        }
+        if (isLoginPage) window.location.replace(getBasePath() + "index.html");
 
-        // --- 1. Robust Navbar Loading ---
-        // We use .includes() so it works even if the URL is "map.html?v=1" or "chat.html/"
-        let currentTab = null;
-        if (isRoot) currentTab = "home";
-        else if (page.includes("map")) currentTab = "map";
-        else if (page.includes("chat")) currentTab = "chat";
-        else if (page.includes("profile")) currentTab = "profile";
+        // Inject the Nav from the external file
+        injectNavbar();
 
-        if (currentTab) {
-            console.log("Loading Navbar for tab:", currentTab);
-            window.loadNavbar(currentTab);
-        }
-
-        // --- 2. UI Sync ---
+        // Sync User UI Data
         try {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 const nameEl = document.getElementById("user-full-name");
                 const idEl = document.getElementById("user-member-id");
-                
                 if (nameEl) nameEl.innerText = userData.name || "User";
                 if (idEl) idEl.innerText = "@" + (userData.username || "member");
             }
         } catch (e) {
-            console.error("Firebase Data Error:", e);
+            console.error("UI Sync Error:", e);
         }
     }
 });
