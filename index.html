@@ -5,29 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home - ClanHub</title>
   
-  <!-- 1. Script with 'defer' for immediate, blink-free injection -->
   <script type="module" src="app.js" defer></script>
   
-  <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* 2. Placeholder CSS: Keeps the layout stable while app.js loads nav.html */
-    #navbar-placeholder {
-      display: block;
-      width: 100%;
-      height: 90px; /* Reserves enough vertical space for the floating nav */
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 9998; /* Sits behind the actual nav (which is 99999) */
-      pointer-events: none; /* Allows interaction with elements behind the empty space */
-    }
-
-    /* 3. Global Padding: Prevents dashboard cards from being cut off at the bottom */
-    .dashboard-container {
-      padding-bottom: 110px; 
-    }
-  </style>
+  <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
@@ -47,7 +27,6 @@
     </main>
   </div>
 
-  <!-- 4. The Placeholder for injection -->
   <div id="navbar-placeholder"></div>
 
 </body>

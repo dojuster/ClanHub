@@ -4,46 +4,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClanHub - Authentication</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
 
   <div class="box">
     <h2 id="auth-title">ClanHub Login</h2>
+    
     <p id="auth-subtitle" style="font-size: 13px; color: #94a3b8; margin: -15px 0 15px 0;" class="hidden-state">
       Create your local network identity
     </p>
 
-    <!-- REGISTER FIELDS -->
     <div id="registration-only-fields" class="hidden-state">
       <input type="text" id="reg-name" placeholder="Full Name">
       <input type="text" id="reg-contact" placeholder="Phone (e.g. +91...)">
     </div>
 
-    <!-- SHARED FIELDS -->
     <input type="text" id="username" placeholder="Username ID (e.g. akshay01)">
     <input type="password" id="password" placeholder="Password">
 
-    <!-- OTP LAYER -->
     <div id="otp-and-verify-block" class="hidden-state">
-      <div class="otp-layout-grid" style="display: flex; gap: 10px; margin-bottom: 10px;">
-        <input type="text" id="reg-otp" placeholder="OTP Code" style="flex: 1; margin: 0;">
-        <button type="button" onclick="sendOTP()" style="background: #6366f1; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Send OTP</button>
+      <div class="otp-layout-grid">
+        <input type="text" id="reg-otp" placeholder="OTP Code" style="margin: 0;">
+        <button type="button" onclick="sendOTP()" style="width: 120px; margin-top: 0; background: #6366f1; color: white; border: none; padding: 10px; border-radius: 12px; cursor: pointer; font-size: 13px; font-weight: 600;">Send OTP</button>
       </div>
 
-      <!-- CRITICAL FOR OTP -->
       <div id="recaptcha-container"></div>
 
-      <label class="human-checkbox-row" style="display: block; margin-top: 10px;">
+      <label class="human-checkbox-row">
         <input type="checkbox" id="human-verify">
-        <span style="font-size: 12px; color: #94a3b8;">I am human</span>
+        <span>I am human</span>
       </label>
     </div>
 
-    <button id="btn-login-submit" onclick="login()" style="width: 100%; padding: 12px; margin-top: 15px; background: #6366f1; color: white; border: none; border-radius: 5px; font-weight: bold;">Login</button>
-    <button id="btn-register-submit" class="hidden-state" onclick="handleRegister()" style="width: 100%; padding: 12px; margin-top: 15px; background: limegreen; color: white; border: none; border-radius: 5px; font-weight: bold;">Register Account</button>
+    <button id="btn-login-submit" onclick="login()" style="width: 100%; padding: 14px; margin-top: 15px; background: #6366f1; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">Login</button>
+    
+    <button id="btn-register-submit" class="hidden-state" onclick="handleRegister()" style="width: 100%; padding: 14px; margin-top: 15px; background: #22c55e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">Register Account</button>
 
-    <p id="msg" style="margin-top: 15px; text-align: center; font-weight: bold;"></p>
+    <p id="msg"></p>
 
     <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; font-size: 14px; text-align: center;">
       <span id="footer-text">Don't have an account?</span>
@@ -58,6 +56,7 @@
       if(e) e.preventDefault();
       const isLogin = document.getElementById("auth-title").innerText === "ClanHub Login";
       document.getElementById("auth-title").innerText = isLogin ? "Create Account" : "ClanHub Login";
+      document.getElementById("auth-subtitle").classList.toggle("hidden-state");
       document.getElementById("registration-only-fields").classList.toggle("hidden-state");
       document.getElementById("otp-and-verify-block").classList.toggle("hidden-state");
       document.getElementById("btn-login-submit").classList.toggle("hidden-state");

@@ -5,35 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profile - ClanHub</title>
   
-  <!-- 1. Script in head with 'defer' for immediate injection -->
   <script type="module" src="app.js" defer></script>
   
-  <link rel="stylesheet" href="style.css">
-
-  <style>
-    /* 2. Placeholder CSS for layout stability */
-    #navbar-placeholder {
-      display: block;
-      width: 100%;
-      height: 90px; /* Reserves space for the floating nav */
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      z-index: 9998; /* Sits behind the actual nav (99999) */
-      pointer-events: none; /* Critical: allows clicking feed/buttons 'behind' the empty nav space */
-    }
-
-    /* 3. Global spacing so the bottom of the profile isn't cut off */
-    body {
-      padding-bottom: 110px;
-      margin: 0;
-      background-color: #0f172a; /* Matches your app's dark theme */
-    }
-  </style>
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-  <!-- 1. INSTAGRAM PROFILE HEADER BOX CONTAINER -->
   <div class="box" style="padding-bottom: 20px;">
     <h2 class="profile-main-title">Profile</h2>
     
@@ -56,7 +33,6 @@
     </div>
   </div>
 
-  <!-- 2. APP PRIVACY CONFIGURATIONS -->
   <div class="outside-card">
     <div class="setting-title">⚙️ App Privacy Configurations</div>
     
@@ -85,12 +61,10 @@
     </div>
   </div>
 
-  <!-- 3. SIGN OUT ACTION -->
   <button class="btn-signout-standalone" onclick="logout()">
     Sign Out Session
   </button>
 
-  <!-- 4. NAV PLACEHOLDER -->
   <div id="navbar-placeholder"></div>
 
 </body>

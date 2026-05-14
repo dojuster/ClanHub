@@ -1,0 +1,210 @@
+/* ---- profile.css ---- */
+
+/* 1. Base Layout & Shared Glassmorphism */
+:root {
+    --accent: #6366f1;
+    --nav-height: 70px;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    min-height: 100vh;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 0 120px 0; /* Space for navbar */
+    margin: 0;
+}
+
+.box, .outside-card {
+    width: 90%;
+    max-width: 360px;
+    padding: 25px;
+    border-radius: 24px;
+    background: rgba(30, 41, 59, 0.45);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    margin-bottom: 15px;
+}
+
+/* 2. Profile Header Components */
+.profile-main-title {
+    text-align: left;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.instagram-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.profile-avatar-wrapper {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 34px;
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.online-badge {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 14px;
+    height: 14px;
+    background: #4ade80;
+    border: 2.5px solid #1e293b;
+    border-radius: 50%;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-grow: 1;
+    padding: 8px 4px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.stat-item:not(:last-child) {
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.stat-label {
+    font-size: 9px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-top: 1px;
+}
+
+/* 3. Bio & Text */
+.user-bio-container {
+    text-align: left;
+    width: 100%;
+    padding: 0 4px;
+}
+
+#user-full-name {
+    margin-bottom: 2px;
+    font-weight: 700;
+    font-size: 19px;
+    color: #ffffff;
+}
+
+#user-member-id {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* 4. Privacy Settings & Toggles */
+.setting-title {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #cbd5e1;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .3s;
+    border-radius: 24px;
+}
+
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 16px; width: 16px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider::before { transform: translateX(18px); }
+
+/* 5. Sign Out Button */
+.btn-signout-standalone {
+    width: 90%;
+    max-width: 360px;
+    padding: 14px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+/* 6. Placeholder logic */
+#navbar-placeholder {
+    display: block;
+    width: 100%;
+    height: 90px;
+    position: fixed;
+    bottom: 0;
+    z-index: 9998;
+    pointer-events: none;
+}
