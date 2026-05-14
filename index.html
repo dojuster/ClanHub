@@ -1,29 +1,51 @@
-<div id="user-display">Loading...</div>
-<button id="logout-btn">Logout</button>
-
 <script type="module">
+    // 1. Path to the Firebase SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    
+    // ADD THIS NEW IMPORT HERE:
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // You MUST include your firebaseConfig here too, or link to your auth.js
+    // 2. Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCUM-UWPTMi_lVSOROrzkkp5ceZrh67Ev0",
       authDomain: "clanhub-82f8c.firebaseapp.com",
       projectId: "clanhub-82f8c",
-      // ... the rest of your config
+      storageBucket: "clanhub-82f8c.firebasestorage.app",
+      messagingSenderId: "690675796813",
+      appId: "1:690675796813:web:9cbafb424391ef258a8504"
     };
 
+    // 3. Initialize Services
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app); // Initialize Firestore
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById('user-display').textContent = user.email;
-      } else {
-        window.location.href = "login.html"; 
-      }
+    // 4. Combined Auth + Firestore Logic
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            // Update the UI
+            document.getElementById('user-display').textContent = user.email;
+
+            // SAVE TO FIRESTORE: This logs the user's presence
+            try {
+                await setDoc(doc(db, "active_members", user.uid), {
+                    email: user.email,
+                    last_seen: serverTimestamp(),
+                    status: "Online"
+                }, { merge: true });
+                console.log("Clan member status updated!");
+            } catch (error) {
+                console.error("Error updating status: ", error);
+            }
+
+        } else {
+            // Kick out unauthorized users
+            window.location.href = "login.html";
+        }
     });
 
+    // Logout Logic
     document.getElementById('logout-btn').addEventListener('click', () => {
       signOut(auth).then(() => { window.location.href = "login.html"; });
     });
