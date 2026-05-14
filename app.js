@@ -23,9 +23,13 @@ const db = getFirestore(app);
 
 const formatEmail = (username) => username.includes('@') ? username : `${username.trim()}@clanhub.com`;
 
+// Helper to get the correct root path for GitHub Pages
 function getBasePath() {
   const loc = window.location;
-  return loc.origin + loc.pathname.substring(0, loc.pathname.lastIndexOf('/')) + '/';
+  const path = loc.pathname;
+  // If we are in a subdirectory like /ClanHub/, this ensures we find the root
+  const base = path.substring(0, path.lastIndexOf('/') + 1);
+  return loc.origin + base;
 }
 
 /* ========================================================
@@ -56,29 +60,38 @@ window.logout = function() {
 }
 
 /* ========================================================
-   🚀 STATIC NAV LOADER (FETCH METHOD)
+   🚀 STATIC NAV LOADER (FIXED PATHING)
 ======================================================== */
 async function injectNavbar() {
     const placeholder = document.getElementById('navbar-placeholder');
+    // Guard: Don't run if placeholder is missing or nav already exists
     if (!placeholder || document.querySelector('.bottom-nav')) return;
 
     try {
         const base = getBasePath();
+        console.log("Fetching nav from:", base + 'nav.html'); // Debugging line
+        
         const response = await fetch(base + 'nav.html');
-        if (!response.ok) throw new Error("Nav file not found");
+        if (!response.ok) throw new Error("nav.html not found at " + base);
         
         const navContent = await response.text();
         placeholder.innerHTML = navContent;
 
-        // Apply active class based on URL
-        const path = window.location.pathname;
-        const page = path.split("/").pop();
-        const isRoot = page === "" || page === "index.html" || page === "ClanHub" || path.endsWith('/');
+        // Apply active class based on URL keywords
+        const currentURL = window.location.href.toLowerCase();
+        
+        // Remove 'active' from all first to be safe
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-        if (isRoot) document.getElementById('nav-home')?.classList.add('active');
-        else if (page.includes('map')) document.getElementById('nav-map')?.classList.add('active');
-        else if (page.includes('chat')) document.getElementById('nav-chat')?.classList.add('active');
-        else if (page.includes('profile')) document.getElementById('nav-profile')?.classList.add('active');
+        if (currentURL.includes('profile')) {
+            document.getElementById('nav-profile')?.classList.add('active');
+        } else if (currentURL.includes('map')) {
+            document.getElementById('nav-map')?.classList.add('active');
+        } else if (currentURL.includes('chat')) {
+            document.getElementById('nav-chat')?.classList.add('active');
+        } else if (currentURL.includes('index') || currentURL.endsWith('/') || currentURL.endsWith('clanhub')) {
+            document.getElementById('nav-home')?.classList.add('active');
+        }
 
     } catch (err) {
         console.error("Navbar Injection Failed:", err);
@@ -90,24 +103,29 @@ async function injectNavbar() {
 ======================================================== */
 onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
-    const page = path.split("/").pop();
-    const isLoginPage = page === "login.html";
+    const isLoginPage = path.includes("login.html");
 
     if (!user) {
-        if (!isLoginPage) window.location.replace(getBasePath() + "login.html");
+        if (!isLoginPage) {
+            window.location.replace(getBasePath() + "login.html");
+        }
     } else {
-        if (isLoginPage) window.location.replace(getBasePath() + "index.html");
+        if (isLoginPage) {
+            window.location.replace(getBasePath() + "index.html");
+            return;
+        }
 
-        // Inject the Nav from the external file
-        injectNavbar();
+        // 1. Inject the Navbar
+        await injectNavbar();
 
-        // Sync User UI Data
+        // 2. Sync User UI Data
         try {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 const nameEl = document.getElementById("user-full-name");
                 const idEl = document.getElementById("user-member-id");
+                
                 if (nameEl) nameEl.innerText = userData.name || "User";
                 if (idEl) idEl.innerText = "@" + (userData.username || "member");
             }
