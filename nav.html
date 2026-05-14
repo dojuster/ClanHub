@@ -1,3 +1,64 @@
+<style>
+  /* The Main Navigation Container */
+  .bottom-nav {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    
+    width: 90% !important;
+    max-width: 400px !important;
+    height: 70px !important;
+    
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    
+    /* Design: Dark Glassmorphism */
+    background: rgba(15, 23, 42, 0.9) !important;
+    backdrop-filter: blur(15px) !important;
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+    
+    z-index: 99999 !important;
+    padding: 0 10px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Individual Nav Links */
+  .nav-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    color: #94a3b8 !important; /* Muted Slate */
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    font-family: system-ui, -apple-system, sans-serif !important;
+    transition: all 0.2s ease !important;
+    flex: 1 !important;
+  }
+
+  /* Icon Size */
+  .nav-icon {
+    font-size: 20px !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Highlighting the Active Tab */
+  .nav-item.active {
+    color: #6366f1 !important; /* Indigo Blue */
+  }
+
+  /* Prevent text selection on tap (good for mobile S25) */
+  .nav-item {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+</style>
+
 <nav class="bottom-nav">
   <a href="index.html" class="nav-item" id="nav-home">
     <span class="nav-icon">🏠</span><span>Home</span>
