@@ -76,6 +76,7 @@ async function injectNavbar() {
     if (!res.ok) return;
 
     const freshNav = await res.text();
+    const cachedNav = localStorage.getItem('nav_cache');
 
     // Only update cache if changed
     if (freshNav !== cachedNav) {
