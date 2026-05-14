@@ -279,6 +279,13 @@ button:active {
   will-change: transform;
 }
 
+.bottom-nav {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999;
+}
+
 /* Nav Link Items Core Architecture */
 .nav-item {
   display: flex;
