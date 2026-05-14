@@ -33,7 +33,7 @@ if (loginForm) {
             .then((userCredential) => {
                 console.log("Success! Logged in as:", userCredential.user.email);
                 // Redirect to your main app page
-                window.location.href = "dashboard.html"; 
+                window.location.href = "index.html"; 
             })
             .catch((error) => {
                 console.error("Login Error:", error.code);
