@@ -130,41 +130,39 @@ onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
     const page = path.split("/").pop();
     
-    // Improved GitHub Pages path detection
+    // DEBUG: Open your browser console (F12) to see these values!
+    console.log("Current Path:", path);
+    console.log("Detected Page String:", page);
+
     const isLoginPage = page === "login.html";
-    const isRoot = page === "" || page === "index.html" || path.endsWith('/ClanHub/');
+    // Checks for empty string, index.html, or just the repo folder name
+    const isRoot = page === "" || page === "index.html" || page === "ClanHub" || path.endsWith('/');
 
     if (!user) {
-        // FORCE redirect if not logged in and not on login page
         if (!isLoginPage) {
-            console.log("No user detected. Redirecting to login...");
             window.location.replace(getBasePath() + "login.html");
         }
     } else {
-        console.log("User authenticated:", user.uid);
-        
-        // If logged in but on login page, go to home
         if (isLoginPage) {
             window.location.replace(getBasePath() + "index.html");
         }
 
-        // 1. Load Navbar First
-        const routes = {
-  "index.html": "home",
-  "map.html": "map",
-  "chat.html": "chat",
-  "profile.html": "profile"
-};
+        // --- 1. Robust Navbar Loading ---
+        // We use .includes() so it works even if the URL is "map.html?v=1" or "chat.html/"
+        let currentTab = null;
+        if (isRoot) currentTab = "home";
+        else if (page.includes("map")) currentTab = "map";
+        else if (page.includes("chat")) currentTab = "chat";
+        else if (page.includes("profile")) currentTab = "profile";
 
-const currentTab = routes[page] || (isRoot ? "home" : null);
+        if (currentTab) {
+            console.log("Loading Navbar for tab:", currentTab);
+            window.loadNavbar(currentTab);
+        }
 
-if (currentTab) {
-  window.loadNavbar(currentTab);
-}
-        // 2. Fetch and Fill User Data
+        // --- 2. UI Sync ---
         try {
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
+            const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 const nameEl = document.getElementById("user-full-name");
@@ -174,8 +172,7 @@ if (currentTab) {
                 if (idEl) idEl.innerText = "@" + (userData.username || "member");
             }
         } catch (e) {
-            console.error("Error fetching user data:", e);
+            console.error("Firebase Data Error:", e);
         }
     }
-
 });
