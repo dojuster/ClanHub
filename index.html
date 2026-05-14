@@ -1,24 +1,30 @@
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+<div id="user-display">Loading...</div>
+<button id="logout-btn">Logout</button>
 
-const auth = getAuth();
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-// The "Guard" Listener
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    // 1. User is signed in
-    console.log("Access Granted:", user.email);
-    document.getElementById('user-display').textContent = user.email;
-    // You can now safely fetch private clan data here
-  } else {
-    // 2. No user is signed in
-    console.log("Access Denied. Redirecting...");
-    window.location.href = "login.html"; // Kick unauthorized users back to login
-  }
-});
+    // You MUST include your firebaseConfig here too, or link to your auth.js
+    const firebaseConfig = {
+      apiKey: "AIzaSyCUM-UWPTMi_lVSOROrzkkp5ceZrh67Ev0",
+      authDomain: "clanhub-82f8c.firebaseapp.com",
+      projectId: "clanhub-82f8c",
+      // ... the rest of your config
+    };
 
-// Logout Utility
-document.getElementById('logout-btn').addEventListener('click', () => {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
-});
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById('user-display').textContent = user.email;
+      } else {
+        window.location.href = "login.html"; 
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      signOut(auth).then(() => { window.location.href = "login.html"; });
+    });
+</script>
