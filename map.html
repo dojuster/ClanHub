@@ -29,12 +29,6 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); color: white;
     }
     .km-badge { background: #6366f1; color: white; padding: 6px 12px; border-radius: 12px; display: inline-block; margin-top: 12px; font-weight: 700; }
-
-    :root { --nav-height: 68px; --nav-active-color: #6366f1; --nav-text-color: #94a3b8; }
-    .bottom-nav { position: fixed; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); width: calc(100% - 32px); max-width: 420px; height: var(--nav-height); background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 22px; display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--nav-text-color); font-size: 11px; font-weight: 600; flex: 1; }
-    .nav-item.active { color: var(--nav-active-color); }
-    .nav-icon { font-size: 22px; margin-bottom: 3px; }
   </style>
 </head>
 <body>
@@ -49,27 +43,28 @@
     <div class="km-badge" id="km-val">0 km</div>
   </div>
 
+  <!-- 1. ADD THE NAV PLACEHOLDER HERE -->
+  <div id="navbar-placeholder"></div>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="app.js" defer></script>
+  
+  <!-- 2. LOAD YOUR FIREBASE LOGIC AS A MODULE -->
+  <script type="module" src="app.js"></script>
 
   <script>
     let map;
     let userMarker;
-    let currentPos = [0, 0]; // Start at 0,0 until GPS works
+    let currentPos = [0, 0];
 
     function initMap() {
-      // Create map instance
       map = L.map('map', { zoomControl: false, attributionControl: false }).setView([20, 0], 2);
-
-      // Add Dark Tiles
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 20 }).addTo(map);
 
-      // Create a blue dot for the user
       userMarker = L.circleMarker([0, 0], {
         radius: 10, fillColor: "#6366f1", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.8
       }).addTo(map);
 
-      // Add a static clan marker for testing
+      // Testing Marker
       const clanPos = [22.7600, 75.9000];
       L.marker(clanPos).addTo(map).on('click', () => {
         const distMeters = map.distance(userMarker.getLatLng(), clanPos);
@@ -79,13 +74,13 @@
         map.flyTo(clanPos, 15);
       });
 
-      // 🔥 Request GPS immediately
       updateLocation(true);
     }
 
-    function updateLocation(shouldFly = false) {
+    // Global function for the 🎯 button
+    window.updateLocation = function(shouldFly = false) {
       if (!navigator.geolocation) {
-        alert("GPS not supported on this browser.");
+        alert("GPS not supported.");
         return;
       }
 
@@ -94,28 +89,18 @@
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           currentPos = [lat, lng];
-
           userMarker.setLatLng(currentPos);
-
           if (shouldFly) {
             document.getElementById("dist-panel").style.display = "none";
             map.flyTo(currentPos, 16);
           }
         },
-        (error) => {
-          console.error(error);
-          alert("GPS Error: Please enable location and use HTTPS.");
-        },
+        (error) => console.error("GPS Error:", error),
         { enableHighAccuracy: true }
       );
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      initMap();
-      if (typeof checkAuth === "function" && checkAuth()) {
-        loadNavbar('map');
-      }
-    });
+    window.addEventListener("DOMContentLoaded", initMap);
   </script>
 </body>
 </html>

@@ -26,12 +26,13 @@
     </div>
 
     <div class="user-bio-container">
+      <!-- IDs kept exactly as app.js expects them -->
       <p id="user-full-name">Loading profile...</p>
       <p id="user-member-id">Clan Member ID = ...</p>
     </div>
   </div>
 
-  <!-- 2. APP PRIVACY CONFIGURATIONS OUTSIDE CARD -->
+  <!-- 2. APP PRIVACY CONFIGURATIONS -->
   <div class="outside-card">
     <div class="setting-title">⚙️ App Privacy Configurations</div>
     
@@ -60,49 +61,17 @@
     </div>
   </div>
 
-  <!-- 3. STANDALONE SIGN OUT ACTION BUTTON -->
+  <!-- 3. SIGN OUT ACTION -->
+  <!-- logout() is now handled by window.logout in app.js -->
   <button class="btn-signout-standalone" onclick="logout()">
     Sign Out Session
   </button>
 
-  <script src="app.js"></script>
-  <script>
-    const usernameToken = checkAuth();
-    
-    if (usernameToken) {
-      if (usernameToken === "admin") {
-        document.getElementById("user-full-name").innerText = "Administrator Account";
-        document.getElementById("user-member-id").innerText = "Clan Member ID = admin";
-      } else {
-        fetch(`${API_URL}/users/${usernameToken}`)
-          .then(res => {
-            if (!res.ok) throw new Error("Database link error");
-            return res.json();
-          })
-          .then(data => {
-            if (data.name) {
-              document.getElementById("user-full-name").innerText = data.name;
-              document.getElementById("user-member-id").innerText = "Clan Member ID = " + usernameToken;
-            } else {
-              fallbackFormat();
-            }
-          })
-          .catch((err) => {
-            console.error("Profile payload resolution catch:", err);
-            fallbackFormat();
-          });
-      }
-    }
+  <!-- 4. NAV PLACEHOLDER (Crucial for the nav to show up!) -->
+  <div id="navbar-placeholder"></div>
 
-    function fallbackFormat() {
-      if(usernameToken) {
-        document.getElementById("user-full-name").innerText = usernameToken.charAt(0).toUpperCase() + usernameToken.slice(1);
-        document.getElementById("user-member-id").innerText = "Clan Member ID = " + usernameToken;
-      }
-    }
-
-    // Initialize navbar
-    loadNavbar('profile');
-  </script>
+  <!-- 5. FIREBASE LOGIC (The only script you need) -->
+  <script type="module" src="app.js"></script>
+  
 </body>
 </html>
