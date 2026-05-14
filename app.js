@@ -164,3 +164,25 @@ onAuthStateChanged(auth, async (user) => {
     console.error("User data error:", err);
   }
 });
+
+/* ========================================================
+   🖱️ GLOBAL NAVIGATION HANDLER (PRO FIX)
+======================================================== */
+
+// Attach the listener to the placeholder which is always present in the DOM
+document.getElementById('navbar-placeholder')?.addEventListener('click', (e) => {
+  // Find the closest anchor tag with the class 'nav-item'
+  const navItem = e.target.closest('.nav-item');
+  
+  if (navItem) {
+    // Prevent the default jump to handle it manually and smoothly
+    e.preventDefault(); 
+    
+    const targetPage = navItem.getAttribute('href');
+    
+    if (targetPage) {
+      // Direct the browser to the new page using your base path logic
+      window.location.href = getBasePath() + targetPage;
+    }
+  }
+});
