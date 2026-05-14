@@ -1,11 +1,13 @@
 // ---- ClanHub Central Application Logic & Firebase Manager ----
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-  getAuth, signInWithEmailAndPassword, onAuthStateChanged 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 1. Firebase Configuration
+/* ========================================================
+   🔧 FIREBASE CONFIG
+======================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyCUM-UWPTMi_lVSOROrzkkp5ceZrh67Ev0",
   authDomain: "clanhub-82f8c.firebaseapp.com",
@@ -20,117 +22,144 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const formatEmail = (username) => username.includes('@') ? username : `${username.trim()}@clanhub.com`;
+/* ========================================================
+   🔗 HELPERS
+======================================================== */
+const formatEmail = (username) =>
+  username.includes('@') ? username : `${username.trim()}@clanhub.com`;
 
 function getBasePath() {
   const loc = window.location;
   const path = loc.pathname;
-  const base = path.substring(0, path.lastIndexOf('/') + 1);
-  return loc.origin + base;
+  return loc.origin + path.substring(0, path.lastIndexOf('/') + 1);
 }
 
 /* ========================================================
-   🚀 NAV LOADER (ANTI-BLINK LOGIC)
+   🚀 NAVBAR SYSTEM (NO BLINK)
 ======================================================== */
+
+// Highlight active tab
 function applyActiveClass() {
-    const currentURL = window.location.href.toLowerCase();
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const url = window.location.href.toLowerCase();
 
-    if (currentURL.includes('profile')) {
-        document.getElementById('nav-profile')?.classList.add('active');
-    } else if (currentURL.includes('map')) {
-        document.getElementById('nav-map')?.classList.add('active');
-    } else if (currentURL.includes('chat')) {
-        document.getElementById('nav-chat')?.classList.add('active');
-    } else if (currentURL.includes('index') || currentURL.endsWith('/') || currentURL.endsWith('clanhub')) {
-        document.getElementById('nav-home')?.classList.add('active');
-    }
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+  });
+
+  if (url.includes('profile')) {
+    document.getElementById('nav-profile')?.classList.add('active');
+  } else if (url.includes('map')) {
+    document.getElementById('nav-map')?.classList.add('active');
+  } else if (url.includes('chat')) {
+    document.getElementById('nav-chat')?.classList.add('active');
+  } else {
+    document.getElementById('nav-home')?.classList.add('active');
+  }
 }
 
+// Inject navbar (optimized)
 async function injectNavbar() {
-    const placeholder = document.getElementById('navbar-placeholder');
-    if (!placeholder) return;
+  const placeholder = document.getElementById('navbar-placeholder');
+  if (!placeholder) return;
 
-    // 1. Instant Load from Cache
-    const cachedNav = localStorage.getItem('nav_cache');
-    if (cachedNav) {
-        placeholder.innerHTML = cachedNav;
+  const cachedNav = localStorage.getItem('nav_cache');
+
+  // ✅ 1. INSTANT LOAD (no blink)
+  if (cachedNav && !placeholder.innerHTML.trim()) {
+    placeholder.innerHTML = cachedNav;
+    applyActiveClass();
+  }
+
+  // 🔄 2. BACKGROUND UPDATE (safe, no flicker)
+  try {
+    const res = await fetch(getBasePath() + 'nav.html');
+    if (!res.ok) return;
+
+    const freshNav = await res.text();
+
+    // Only update cache if changed
+    if (freshNav !== cachedNav) {
+      localStorage.setItem('nav_cache', freshNav);
+
+      // ⚡ Update ONLY if nothing rendered yet (prevents flicker)
+      if (!cachedNav) {
+        placeholder.innerHTML = freshNav;
         applyActiveClass();
+      }
     }
-
-    // 2. Background Fetch (Silent Update)
-    try {
-        const base = getBasePath();
-        const response = await fetch(base + 'nav.html');
-        if (response.ok) {
-            const freshNav = await response.text();
-            
-            // Only update DOM if cache is missing or different to prevent a second "blink"
-            if (freshNav !== cachedNav) {
-                localStorage.setItem('nav_cache', freshNav);
-                placeholder.innerHTML = freshNav;
-                applyActiveClass();
-            }
-        }
-    } catch (err) {
-        console.error("Nav Fetch Error:", err);
-    }
+  } catch (err) {
+    console.error("Navbar load error:", err);
+  }
 }
 
 /* ========================================================
-   🔑 AUTHENTICATION & OBSERVER
+   🔑 AUTH SYSTEM
 ======================================================== */
-window.login = async function() {
+
+window.login = async function () {
   const msg = document.getElementById("msg");
-  const userInp = document.getElementById("username").value.trim();
+  const user = document.getElementById("username").value.trim();
   const pass = document.getElementById("password").value;
 
-  if (!userInp || !pass) {
+  if (!user || !pass) {
     msg.innerText = "Please complete all fields.";
     return;
   }
 
   try {
-    await signInWithEmailAndPassword(auth, formatEmail(userInp), pass);
-  } catch (error) {
-    msg.innerText = "Login failed: " + error.message;
+    await signInWithEmailAndPassword(auth, formatEmail(user), pass);
+  } catch (err) {
+    msg.innerText = "Login failed: " + err.message;
   }
-}
+};
 
-window.logout = function() {
-  auth.signOut().then(() => {
+window.logout = function () {
+  signOut(auth).then(() => {
     localStorage.clear();
     window.location.href = getBasePath() + "login.html";
   });
-}
+};
+
+/* ========================================================
+   🧠 LOAD NAVBAR IMMEDIATELY (CRITICAL FIX)
+======================================================== */
+
+// 🚀 THIS LINE FIXES BLINK
+injectNavbar();
+
+/* ========================================================
+   🛡️ AUTH OBSERVER
+======================================================== */
 
 onAuthStateChanged(auth, async (user) => {
-    const path = window.location.pathname;
-    const isLoginPage = path.includes("login.html");
+  const path = window.location.pathname;
+  const isLogin = path.includes("login.html");
 
-    if (!user) {
-        if (!isLoginPage) window.location.replace(getBasePath() + "login.html");
-    } else {
-        if (isLoginPage) {
-            window.location.replace(getBasePath() + "index.html");
-            return;
-        }
-
-        // Start Navbar Injection Immediately
-        injectNavbar();
-
-        // Sync UI Data
-        try {
-            const userSnap = await getDoc(doc(db, "users", user.uid));
-            if (userSnap.exists()) {
-                const userData = userSnap.data();
-                const nameEl = document.getElementById("user-full-name");
-                const idEl = document.getElementById("user-member-id");
-                if (nameEl) nameEl.innerText = userData.name || "User";
-                if (idEl) idEl.innerText = "@" + (userData.username || "member");
-            }
-        } catch (e) {
-            console.error("UI Sync Error:", e);
-        }
+  if (!user) {
+    if (!isLogin) {
+      window.location.replace(getBasePath() + "login.html");
     }
+    return;
+  }
+
+  if (isLogin) {
+    window.location.replace(getBasePath() + "index.html");
+    return;
+  }
+
+  // 🔄 Sync user data (NO NAVBAR HERE)
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+
+      const nameEl = document.getElementById("user-full-name");
+      const idEl = document.getElementById("user-member-id");
+
+      if (nameEl) nameEl.innerText = data.name || "User";
+      if (idEl) idEl.innerText = "@" + (data.username || "member");
+    }
+  } catch (err) {
+    console.error("User data error:", err);
+  }
 });
