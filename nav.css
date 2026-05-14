@@ -1,18 +1,32 @@
-/* ---- nav.css - Advanced Fluid Navigation ---- */
-
+/* ---- nav.css - Professional Unified Navigation ---- */
 :root {
   --nav-height: 70px;
   --nav-active-color: #6366f1;
   --nav-text-color: #94a3b8;
 }
 
-/* The Main Navigation Container */
-.bottom-nav {
+/* 1. The Outer Wrapper (Placeholder) */
+#navbar-placeholder {
   position: fixed !important;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 90px !important;
+  /* Massive z-index ensures it stays above maps/dashboard cards */
+  z-index: 999999 !important; 
+  /* CRITICAL: Allows clicking map/content BEHIND the nav in empty spaces */
+  pointer-events: none; 
+  display: block !important;
+}
+
+/* 2. The Actual Navigation Bar */
+.bottom-nav {
+  /* Re-enables clicks ONLY for the bar itself */
+  pointer-events: auto !important; 
+  position: absolute !important;
+  bottom: 20px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  
   width: 90% !important;
   max-width: 400px !important;
   height: var(--nav-height) !important;
@@ -21,37 +35,32 @@
   justify-content: space-around !important;
   align-items: center !important;
   
-  /* Design: Dark Glassmorphism */
+  /* Premium Dark Glassmorphism */
   background: rgba(15, 23, 42, 0.9) !important;
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 24px !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-  
-  z-index: 99999 !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
   padding: 0 10px !important;
   box-sizing: border-box !important;
-  
-  /* Optimization for mobile scrolling/tapping */
-  contain: layout;
-  will-change: transform;
 }
 
-/* Individual Nav Links */
+/* 3. Individual Nav Links */
 .nav-item {
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
+  justify-content: center !important;
   text-decoration: none !important;
   color: var(--nav-text-color) !important; 
   font-size: 11px !important;
   font-weight: 600 !important;
-  font-family: system-ui, -apple-system, sans-serif !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   flex: 1 !important;
+  height: 100% !important;
+  transition: all 0.25s ease !important;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  cursor: pointer !important;
   position: relative;
 }
 
@@ -61,76 +70,9 @@
   transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
 
-/* Highlighting the Active Tab */
+/* 4. Active Tab Highlighting */
 .nav-item.active {
   color: var(--nav-active-color) !important;
-}
-
-.nav-item.active .nav-icon {
-  transform: translateY(-4px) scale(1.12) !important;
-}
-
-/* Subtle Active indicator line */
-.nav-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  width: 14px;
-  height: 3px;
-  background: var(--nav-active-color);
-  border-radius: 10px;
-  box-shadow: 0 0 8px var(--nav-active-color);
-}
-
-/* ---- Advanced Fluid Bottom Navigation Bar ---- */
-.bottom-nav {
-  position: fixed !important;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: calc(100% - 32px) !important; 
-  max-width: 420px !important; 
-  height: 70px !important;
-  
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8)) !important;
-  backdrop-filter: blur(20px) !important;
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 22px !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5) !important;
-  
-  display: flex !important;
-  justify-content: space-around !important;
-  align-items: center !important;
-  z-index: 10000 !important;
-  padding: 0 8px !important;
-  pointer-events: auto !important;
-}
-
-.nav-item {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  text-decoration: none !important;
-  color: #94a3b8 !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  flex: 1 !important;
-  height: 100% !important;
-  justify-content: center !important;
-  transition: color 0.25s ease !important;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.nav-icon {
-  font-size: 22px !important;
-  margin-bottom: 3px !important;
-  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-}
-
-/* Active State Styles controlled by app.js */
-.nav-item.active {
-  color: #6366f1 !important;
 }
 
 .nav-item.active .nav-icon {
@@ -143,7 +85,7 @@
   bottom: 6px;
   width: 14px;
   height: 3px;
-  background: #6366f1;
+  background: var(--nav-active-color);
   border-radius: 10px;
-  box-shadow: 0 0 8px #6366f1;
+  box-shadow: 0 0 8px var(--nav-active-color);
 }
