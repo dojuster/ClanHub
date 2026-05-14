@@ -1,33 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home - ClanHub</title>
-  
-  <script type="module" src="app.js" defer></script>
-  
-  <link rel="stylesheet" href="index.css">
-</head>
-<body>
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-  <div class="dashboard-container">
-    <header class="header-card">
-      <div class="welcome-text">
-        <h1>ClanHub Feed</h1>
-        <p>Welcome, <span id="user-full-name">Guest</span>!</p>
-        <small id="user-member-id"></small>
-      </div>
-    </header>
+const auth = getAuth();
 
-    <main class="feed-card">
-      <div class="empty-state-icon">🌐</div>
-      <h2>Your Social Feed</h2>
-      <p>Explore hot discussions within your clan circles.</p>
-    </main>
-  </div>
+// The "Guard" Listener
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // 1. User is signed in
+    console.log("Access Granted:", user.email);
+    document.getElementById('user-display').textContent = user.email;
+    // You can now safely fetch private clan data here
+  } else {
+    // 2. No user is signed in
+    console.log("Access Denied. Redirecting...");
+    window.location.href = "login.html"; // Kick unauthorized users back to login
+  }
+});
 
-  <div id="navbar-placeholder"></div>
-
-</body>
-</html>
+// Logout Utility
+document.getElementById('logout-btn').addEventListener('click', () => {
+  signOut(auth).then(() => {
+    window.location.href = "login.html";
+  });
+});
