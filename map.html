@@ -4,12 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Clan Hub - Free Radar</title>
+
+  <!-- 1. Script in head with 'defer' for immediate, blink-free injection -->
+  <script type="module" src="app.js" defer></script>
+  
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body, html { height: 100%; width: 100%; font-family: system-ui, sans-serif; overflow: hidden; background: #0f172a; }
     #map { height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: #242f3e; }
+
+    /* 2. Placeholder CSS for layout stability */
+    #navbar-placeholder {
+      display: block;
+      width: 100%;
+      height: 90px; /* Reserves space for the floating nav */
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 9998; /* Sits behind the actual nav (99999) */
+      pointer-events: none; /* Allows interaction with the map behind empty spaces */
+    }
 
     .locate-btn {
       position: absolute; right: 20px; top: 40px; width: 50px; height: 50px;
@@ -43,13 +59,10 @@
     <div class="km-badge" id="km-val">0 km</div>
   </div>
 
-  <!-- 1. ADD THE NAV PLACEHOLDER HERE -->
+  <!-- 3. The Nav Placeholder -->
   <div id="navbar-placeholder"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  
-  <!-- 2. LOAD YOUR FIREBASE LOGIC AS A MODULE -->
-  <script type="module" src="app.js"></script>
 
   <script>
     let map;
@@ -74,7 +87,10 @@
         map.flyTo(clanPos, 15);
       });
 
-      updateLocation(true);
+      // Safely call updateLocation once defined
+      if (window.updateLocation) {
+        window.updateLocation(true);
+      }
     }
 
     // Global function for the 🎯 button
@@ -89,8 +105,8 @@
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
           currentPos = [lat, lng];
-          userMarker.setLatLng(currentPos);
-          if (shouldFly) {
+          if(userMarker) userMarker.setLatLng(currentPos);
+          if (shouldFly && map) {
             document.getElementById("dist-panel").style.display = "none";
             map.flyTo(currentPos, 16);
           }

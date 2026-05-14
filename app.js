@@ -1,10 +1,9 @@
 // ---- ClanHub Central Application Logic & Firebase Manager ----
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged 
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. Firebase Configuration
 const firebaseConfig = {
@@ -23,17 +22,63 @@ const db = getFirestore(app);
 
 const formatEmail = (username) => username.includes('@') ? username : `${username.trim()}@clanhub.com`;
 
-// Helper to get the correct root path for GitHub Pages
 function getBasePath() {
   const loc = window.location;
   const path = loc.pathname;
-  // If we are in a subdirectory like /ClanHub/, this ensures we find the root
   const base = path.substring(0, path.lastIndexOf('/') + 1);
   return loc.origin + base;
 }
 
 /* ========================================================
-   🔑 AUTHENTICATION LOGIC
+   🚀 NAV LOADER (ANTI-BLINK LOGIC)
+======================================================== */
+function applyActiveClass() {
+    const currentURL = window.location.href.toLowerCase();
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    if (currentURL.includes('profile')) {
+        document.getElementById('nav-profile')?.classList.add('active');
+    } else if (currentURL.includes('map')) {
+        document.getElementById('nav-map')?.classList.add('active');
+    } else if (currentURL.includes('chat')) {
+        document.getElementById('nav-chat')?.classList.add('active');
+    } else if (currentURL.includes('index') || currentURL.endsWith('/') || currentURL.endsWith('clanhub')) {
+        document.getElementById('nav-home')?.classList.add('active');
+    }
+}
+
+async function injectNavbar() {
+    const placeholder = document.getElementById('navbar-placeholder');
+    if (!placeholder) return;
+
+    // 1. Instant Load from Cache
+    const cachedNav = localStorage.getItem('nav_cache');
+    if (cachedNav) {
+        placeholder.innerHTML = cachedNav;
+        applyActiveClass();
+    }
+
+    // 2. Background Fetch (Silent Update)
+    try {
+        const base = getBasePath();
+        const response = await fetch(base + 'nav.html');
+        if (response.ok) {
+            const freshNav = await response.text();
+            
+            // Only update DOM if cache is missing or different to prevent a second "blink"
+            if (freshNav !== cachedNav) {
+                localStorage.setItem('nav_cache', freshNav);
+                placeholder.innerHTML = freshNav;
+                applyActiveClass();
+            }
+        }
+    } catch (err) {
+        console.error("Nav Fetch Error:", err);
+    }
+}
+
+/* ========================================================
+   🔑 AUTHENTICATION & OBSERVER
 ======================================================== */
 window.login = async function() {
   const msg = document.getElementById("msg");
@@ -59,73 +104,28 @@ window.logout = function() {
   });
 }
 
-/* ========================================================
-   🚀 STATIC NAV LOADER (FIXED PATHING)
-======================================================== */
-async function injectNavbar() {
-    const placeholder = document.getElementById('navbar-placeholder');
-    // Guard: Don't run if placeholder is missing or nav already exists
-    if (!placeholder || document.querySelector('.bottom-nav')) return;
-
-    try {
-        const base = getBasePath();
-        console.log("Fetching nav from:", base + 'nav.html'); // Debugging line
-        
-        const response = await fetch(base + 'nav.html');
-        if (!response.ok) throw new Error("nav.html not found at " + base);
-        
-        const navContent = await response.text();
-        placeholder.innerHTML = navContent;
-
-        // Apply active class based on URL keywords
-        const currentURL = window.location.href.toLowerCase();
-        
-        // Remove 'active' from all first to be safe
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-        if (currentURL.includes('profile')) {
-            document.getElementById('nav-profile')?.classList.add('active');
-        } else if (currentURL.includes('map')) {
-            document.getElementById('nav-map')?.classList.add('active');
-        } else if (currentURL.includes('chat')) {
-            document.getElementById('nav-chat')?.classList.add('active');
-        } else if (currentURL.includes('index') || currentURL.endsWith('/') || currentURL.endsWith('clanhub')) {
-            document.getElementById('nav-home')?.classList.add('active');
-        }
-
-    } catch (err) {
-        console.error("Navbar Injection Failed:", err);
-    }
-}
-
-/* ========================================================
-   🛡️ AUTH OBSERVER
-======================================================== */
 onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
     const isLoginPage = path.includes("login.html");
 
     if (!user) {
-        if (!isLoginPage) {
-            window.location.replace(getBasePath() + "login.html");
-        }
+        if (!isLoginPage) window.location.replace(getBasePath() + "login.html");
     } else {
         if (isLoginPage) {
             window.location.replace(getBasePath() + "index.html");
             return;
         }
 
-        // 1. Inject the Navbar
-        await injectNavbar();
+        // Start Navbar Injection Immediately
+        injectNavbar();
 
-        // 2. Sync User UI Data
+        // Sync UI Data
         try {
             const userSnap = await getDoc(doc(db, "users", user.uid));
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 const nameEl = document.getElementById("user-full-name");
                 const idEl = document.getElementById("user-member-id");
-                
                 if (nameEl) nameEl.innerText = userData.name || "User";
                 if (idEl) idEl.innerText = "@" + (userData.username || "member");
             }

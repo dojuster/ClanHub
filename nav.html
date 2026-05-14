@@ -33,15 +33,16 @@
     flex-direction: column !important;
     align-items: center !important;
     text-decoration: none !important;
-    color: #94a3b8 !important; /* Muted Slate */
+    color: #94a3b8 !important; 
     font-size: 11px !important;
     font-weight: 500 !important;
     font-family: system-ui, -apple-system, sans-serif !important;
     transition: all 0.2s ease !important;
     flex: 1 !important;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
 
-  /* Icon Size */
   .nav-icon {
     font-size: 20px !important;
     margin-bottom: 4px !important;
@@ -49,13 +50,7 @@
 
   /* Highlighting the Active Tab */
   .nav-item.active {
-    color: #6366f1 !important; /* Indigo Blue */
-  }
-
-  /* Prevent text selection on tap (good for mobile S25) */
-  .nav-item {
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
+    color: #6366f1 !important; 
   }
 </style>
 
