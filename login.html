@@ -5,75 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClanHub - Authentication</title>
   <link rel="stylesheet" href="style.css">
-  
-  <!-- Note: We are removing EmailJS as Firebase handles the OTP logic directly -->
 </head>
 <body>
 
   <div class="box">
-    <!-- Main Dynamic Headers -->
     <h2 id="auth-title">ClanHub Login</h2>
     <p id="auth-subtitle" style="font-size: 13px; color: #94a3b8; margin: -15px 0 15px 0;" class="hidden-state">
       Create your local network identity
     </p>
 
-    <!-- REGISTER FIELDS CONTAINER -->
+    <!-- REGISTER FIELDS -->
     <div id="registration-only-fields" class="hidden-state">
       <input type="text" id="reg-name" placeholder="Full Name">
-      <!-- Firebase Phone Auth needs the phone number here -->
-      <input type="text" id="reg-contact" placeholder="Phone (e.g. +919876543210)">
+      <input type="text" id="reg-contact" placeholder="Phone (e.g. +91...)">
     </div>
 
-    <!-- LOGIN / SHARED CREDENTIAL FIELDS -->
-    <!-- Use Email for Username field to work with Firebase Auth -->
-    <input type="text" id="username" placeholder="Email Address">
+    <!-- SHARED FIELDS -->
+    <input type="text" id="username" placeholder="Username ID (e.g. akshay01)">
     <input type="password" id="password" placeholder="Password">
 
-    <!-- PRO OTP LAYER AND BOT CHECK OVERLAYS -->
+    <!-- OTP LAYER -->
     <div id="otp-and-verify-block" class="hidden-state">
-      <div class="otp-layout-grid">
-        <input type="text" id="reg-otp" placeholder="Enter OTP Code" class="otp-input-field" style="margin: 0;">
-        <!-- Updated to call the Firebase sendOTP function -->
-        <button type="button" class="btn-otp-action" onclick="sendOTP()">Send OTP</button>
+      <div class="otp-layout-grid" style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <input type="text" id="reg-otp" placeholder="OTP Code" style="flex: 1; margin: 0;">
+        <button type="button" onclick="sendOTP()" style="background: #6366f1; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Send OTP</button>
       </div>
 
-      <!-- Firebase Recaptcha Container (Required for Phone Auth) -->
+      <!-- CRITICAL FOR OTP -->
       <div id="recaptcha-container"></div>
 
-      <label class="human-checkbox-row">
+      <label class="human-checkbox-row" style="display: block; margin-top: 10px;">
         <input type="checkbox" id="human-verify">
-        <span>I am a human verification check</span>
+        <span style="font-size: 12px; color: #94a3b8;">I am human</span>
       </label>
     </div>
 
-    <!-- PRIMARY DYNAMIC TRANSACTION ACTION BUTTONS -->
-    <button id="btn-login-submit" onclick="login()">Login</button>
-    <button id="btn-register-submit" class="hidden-state" onclick="handleRegister()">Register Account</button>
+    <button id="btn-login-submit" onclick="login()" style="width: 100%; padding: 12px; margin-top: 15px; background: #6366f1; color: white; border: none; border-radius: 5px; font-weight: bold;">Login</button>
+    <button id="btn-register-submit" class="hidden-state" onclick="handleRegister()" style="width: 100%; padding: 12px; margin-top: 15px; background: limegreen; color: white; border: none; border-radius: 5px; font-weight: bold;">Register Account</button>
 
-    <!-- SYSTEM ALERTS INTERFACE VIEW -->
-    <p id="msg"></p>
+    <p id="msg" style="margin-top: 15px; text-align: center; font-weight: bold;"></p>
 
-    <!-- TOGGLE STATE CONTROLLER FOOTER -->
-    <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; font-size: 14px; color: #94a3b8;">
+    <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; font-size: 14px; text-align: center;">
       <span id="footer-text">Don't have an account?</span>
-      <a href="#" id="footer-link" onclick="toggleFormState(event)" style="color: #6366f1; text-decoration: none; font-weight: 600; margin-left: 5px;">
-        Register
-      </a>
+      <a href="#" id="footer-link" onclick="toggleFormState(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Register</a>
     </div>
-
   </div>
 
-  <!-- 🚀 CRITICAL: type="module" allows the use of 'import' in app.js -->
   <script type="module" src="app.js"></script>
 
   <script>
-    // Logic for toggling between Login and Register views
     function toggleFormState(e) {
       if(e) e.preventDefault();
       const isLogin = document.getElementById("auth-title").innerText === "ClanHub Login";
-      
       document.getElementById("auth-title").innerText = isLogin ? "Create Account" : "ClanHub Login";
-      document.getElementById("auth-subtitle").classList.toggle("hidden-state");
       document.getElementById("registration-only-fields").classList.toggle("hidden-state");
       document.getElementById("otp-and-verify-block").classList.toggle("hidden-state");
       document.getElementById("btn-login-submit").classList.toggle("hidden-state");

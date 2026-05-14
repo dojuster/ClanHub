@@ -123,45 +123,59 @@ window.loadNavbar = function(activeTab) {
     </nav>`;
   document.body.insertAdjacentHTML('beforeend', navHTML);
 }
-
 /* ========================================================
-   🛡️ AUTH OBSERVER (FIXED FOR GITHUB PAGES)
+   🛡️ AUTH OBSERVER (STRICT ENFORCEMENT)
 ======================================================== */
 onAuthStateChanged(auth, async (user) => {
     const path = window.location.pathname;
     const page = path.split("/").pop();
     
-    // Check if we are on the login page or the root/index
+    // Improved GitHub Pages path detection
     const isLoginPage = page === "login.html";
-    const isIndexPage = page === "index.html" || page === "" || page === "ClanHub" || path.endsWith('/');
+    const isRoot = page === "" || page === "index.html" || path.endsWith('/ClanHub/');
 
     if (!user) {
+        // FORCE redirect if not logged in and not on login page
         if (!isLoginPage) {
-            window.location.href = getBasePath() + "login.html";
+            console.log("No user detected. Redirecting to login...");
+            window.location.replace(getBasePath() + "login.html");
         }
     } else {
-        // User is logged in
+        console.log("User authenticated:", user.uid);
+        
+        // If logged in but on login page, go to home
         if (isLoginPage) {
-            window.location.href = getBasePath() + "index.html";
+            window.location.replace(getBasePath() + "index.html");
         }
 
-        // Fetch User Data
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-            const userData = userSnap.data();
-            if (document.getElementById("user-full-name")) {
-                document.getElementById("user-full-name").innerText = userData.name;
-            }
-            if (document.getElementById("user-member-id")) {
-                document.getElementById("user-member-id").innerText = "@" + userData.username;
-            }
-        }
+        // 1. Load Navbar First
+        const routes = {
+  "index.html": "home",
+  "map.html": "map",
+  "chat.html": "chat",
+  "profile.html": "profile"
+};
 
-        // Load Navbar
-        if (isIndexPage) window.loadNavbar('home');
-        else if (page === "map.html") window.loadNavbar('map');
-        else if (page === "chat.html") window.loadNavbar('chat');
-        else if (page === "profile.html") window.loadNavbar('profile');
+const currentTab = routes[page] || (isRoot ? "home" : null);
+
+if (currentTab) {
+  window.loadNavbar(currentTab);
+}
+        // 2. Fetch and Fill User Data
+        try {
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                const nameEl = document.getElementById("user-full-name");
+                const idEl = document.getElementById("user-member-id");
+                
+                if (nameEl) nameEl.innerText = userData.name || "User";
+                if (idEl) idEl.innerText = "@" + (userData.username || "member");
+            }
+        } catch (e) {
+            console.error("Error fetching user data:", e);
+        }
     }
+
 });

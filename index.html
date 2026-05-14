@@ -12,7 +12,9 @@
     <header class="header-card">
       <div class="welcome-text">
         <h1>ClanHub Feed</h1>
-        <p>Welcome, <span id="user-display">Guest</span>!</p>
+        <!-- These IDs must exist for app.js to fill them -->
+        <p>Welcome, <span id="user-full-name">Guest</span>!</p>
+        <small id="user-member-id"></small>
       </div>
     </header>
 
@@ -23,16 +25,7 @@
     </main>
   </div>
 
-  <script src="app.js"></script>
-  <script>
-    // Use the updated global security check function
-    const user = checkAuth();
-    if (user) {
-      document.getElementById("user-display").textContent = user;
-    }
-    
-    // Inject the navbar
-    loadNavbar('home');
-  </script>
+  <!-- Keep this at the very bottom -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
