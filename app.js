@@ -2,9 +2,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signInWithPhoneNumber, RecaptchaVerifier 
+  signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. Firebase Configuration
 const firebaseConfig = {
@@ -25,7 +25,8 @@ const formatEmail = (username) => username.includes('@') ? username : `${usernam
 
 function getBasePath() {
   const loc = window.location;
-  return loc.protocol + '//' + loc.host + loc.pathname.substring(0, loc.pathname.lastIndexOf('/')) + '/';
+  // This helps GitHub Pages handle the subfolder /ClanHub/ correctly
+  return loc.origin + loc.pathname.substring(0, loc.pathname.lastIndexOf('/')) + '/';
 }
 
 /* ========================================================
@@ -37,29 +38,16 @@ window.login = async function() {
   const pass = document.getElementById("password").value;
 
   if (!userInp || !pass) {
-    msg.innerText = "Please complete all login fields.";
-    return;
-  }
-
-  if (userInp === "admin" && pass === "1234") {
-    handleSessionMapping("admin");
+    msg.innerText = "Please complete all fields.";
     return;
   }
 
   try {
     await signInWithEmailAndPassword(auth, formatEmail(userInp), pass);
-    handleSessionMapping(userInp);
+    // Success redirect is handled by onAuthStateChanged below
   } catch (error) {
     msg.innerText = "Login failed: " + error.message;
   }
-}
-
-function handleSessionMapping(username) {
-  let sessions = JSON.parse(localStorage.getItem("active_sessions")) || [];
-  if (!sessions.includes(username)) sessions.push(username);
-  localStorage.setItem("active_sessions", JSON.stringify(sessions));
-  localStorage.setItem("user", username);
-  window.location.href = getBasePath() + "index.html";
 }
 
 /* ========================================================
@@ -100,15 +88,13 @@ window.handleRegister = async function() {
       uid: authResult.user.uid,
       created_at: new Date()
     });
-
-    handleSessionMapping(userInp);
   } catch (err) {
     msg.innerText = "Error: " + err.message;
   }
 }
 
 /* ========================================================
-   🌐 DYNAMIC NAVBAR (USING YOUR STYLE.CSS CLASSES)
+   🌐 DYNAMIC NAVBAR
 ======================================================== */
 window.logout = function() {
   auth.signOut().then(() => {
@@ -119,27 +105,63 @@ window.logout = function() {
 
 window.loadNavbar = function(activeTab) {
   if (document.querySelector('.bottom-nav')) return;
-
   const base = getBasePath();
   const navHTML = `
     <nav class="bottom-nav">
       <a href="${base}index.html" class="nav-item ${activeTab === 'home' ? 'active' : ''}">
-        <span class="nav-icon">🏠</span>
-        <span>Home</span>
+        <span class="nav-icon">🏠</span><span>Home</span>
       </a>
       <a href="${base}map.html" class="nav-item ${activeTab === 'map' ? 'active' : ''}">
-        <span class="nav-icon">🗺️</span>
-        <span>Radar</span>
+        <span class="nav-icon">🗺️</span><span>Radar</span>
       </a>
       <a href="${base}chat.html" class="nav-item ${activeTab === 'chat' ? 'active' : ''}">
-        <span class="nav-icon">💬</span>
-        <span>Chat</span>
+        <span class="nav-icon">💬</span><span>Chat</span>
       </a>
       <a href="${base}profile.html" class="nav-item ${activeTab === 'profile' ? 'active' : ''}">
-        <span class="nav-icon">👤</span>
-        <span>Profile</span>
+        <span class="nav-icon">👤</span><span>Profile</span>
       </a>
-    </nav>
-  `;
+    </nav>`;
   document.body.insertAdjacentHTML('beforeend', navHTML);
 }
+
+/* ========================================================
+   🛡️ AUTH OBSERVER (FIXED FOR GITHUB PAGES)
+======================================================== */
+onAuthStateChanged(auth, async (user) => {
+    const path = window.location.pathname;
+    const page = path.split("/").pop();
+    
+    // Check if we are on the login page or the root/index
+    const isLoginPage = page === "login.html";
+    const isIndexPage = page === "index.html" || page === "" || page === "ClanHub" || path.endsWith('/');
+
+    if (!user) {
+        if (!isLoginPage) {
+            window.location.href = getBasePath() + "login.html";
+        }
+    } else {
+        // User is logged in
+        if (isLoginPage) {
+            window.location.href = getBasePath() + "index.html";
+        }
+
+        // Fetch User Data
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+            if (document.getElementById("user-full-name")) {
+                document.getElementById("user-full-name").innerText = userData.name;
+            }
+            if (document.getElementById("user-member-id")) {
+                document.getElementById("user-member-id").innerText = "@" + userData.username;
+            }
+        }
+
+        // Load Navbar
+        if (isIndexPage) window.loadNavbar('home');
+        else if (page === "map.html") window.loadNavbar('map');
+        else if (page === "chat.html") window.loadNavbar('chat');
+        else if (page === "profile.html") window.loadNavbar('profile');
+    }
+});
