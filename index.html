@@ -3,36 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClanHub | Dashboard</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            display: none; 
-            background-color: #000; 
-            color: white; 
-            font-family: 'Special Elite', sans-serif;
-            min-height: 100vh; /* Uses full phone height */
-            width: 100vw;  /* Uses full phone width */
-            padding: 20px;
-        }
-
-        #dashboard-content {
-            width: 100%;
-            text-align: center;
-            padding-top: 20px;
-        }
-
-        /* Prevent content from hiding under the bottom nav bar */
-        body { padding-bottom: 80px; } 
-    </style>
+    <title>ClanHub | War Room</title>
+    <link rel="stylesheet" href="index.css">
 </head>
-<body>
-
-    <div id="dashboard-content">
+<body style="display: none;"> <header>
         <h1>WAR ROOM</h1>
-        <p style="color: #ff1493; margin: 10px 0;">IDENTITY: <span id="user-display">VERIFYING...</span></p>
-    </div>
+        <div class="identity-banner">
+            <span class="live-indicator"></span> 
+            OPERATIVE: <span id="user-display">VERIFYING...</span>
+        </div>
+    </header>
+
+    <main class="feed-container">
+        <div class="war-card">
+            <div class="card-title">SYSTEM STATUS</div>
+            <div class="card-content">All nodes operational. Crypto-mining active at 1470.85 kH/s.</div>
+            <div class="card-time">JUST NOW</div>
+        </div>
+
+        <div class="war-card" style="border-left-color: var(--neon-pink);">
+            <div class="card-title">CLAN MISSION</div>
+            <div class="card-content">Infiltrate the 'Imagery' machine on Hack The Box. Target IP: 10.10.11.88.</div>
+            <div class="card-time">2 HOURS AGO</div>
+        </div>
+    </main>
 
     <div id="nav-placeholder"></div>
 
@@ -57,7 +51,7 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.body.style.display = "block";
-                document.getElementById('user-display').textContent = user.email;
+                document.getElementById('user-display').textContent = user.email.split('@')[0].toUpperCase();
 
                 try {
                     await setDoc(doc(db, "active_members", user.uid), {
@@ -73,7 +67,7 @@
             }
         });
 
-        // Delegate logout for injected nav bar
+        // Logout delegation
         document.addEventListener('click', (e) => {
             if (e.target.id === 'logout-btn' || e.target.closest('#logout-btn')) {
                 signOut(auth).then(() => { window.location.href = "login.html"; });
@@ -82,20 +76,17 @@
     </script>
 
     <script>
-    fetch('nav.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('nav-placeholder').innerHTML = data;
-            
-            // LOGIC TO HIGHLIGHT THE CORRECT TAB
-            const path = window.location.pathname;
-            if (path.includes('index.html') || path === '/') {
-                document.getElementById('link-war').classList.add('active');
-            } else if (path.includes('profile.html')) {
-                document.getElementById('link-profile').classList.add('active');
-            }
-            // Add similar else-ifs for clan.html and stats.html
-        });
-</script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+                
+                const path = window.location.pathname;
+                if (path.includes('index.html') || path.endsWith('/')) {
+                    const warLink = document.getElementById('link-war');
+                    if(warLink) warLink.classList.add('active');
+                }
+            });
+    </script>
 </body>
 </html>

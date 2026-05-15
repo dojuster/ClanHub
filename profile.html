@@ -4,48 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ClanHub | Soldier Profile</title>
-    <link rel="stylesheet" href="login.css"> <style>
-        body { display: none; background: #000; color: #fff; padding: 20px; }
-        .profile-card {
-            border: 2px solid #333;
-            padding: 30px;
-            margin-top: 50px;
-            box-shadow: 10px 10px 0px #ff1493;
-        }
-        .stat-line { margin: 15px 0; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .label { color: #ff1493; font-size: 0.8rem; letter-spacing: 2px; }
-        .value { font-size: 1.2rem; word-break: break-all; }
-        .logout-danger {
-            margin-top: 40px;
-            background: #ff1493;
-            color: #000;
-            padding: 10px;
-            width: 100%;
-            border: none;
-            font-family: 'Stardos Stencil', cursive;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-    <h1>SOLDIER PROFILE</h1>
-    
-    <div class="profile-card">
-        <div class="stat-line">
-            <div class="label">IDENTIFICATION</div>
-            <div class="value" id="prof-email">LOADING...</div>
+    <header class="profile-header">
+        <div class="avatar-wrapper">
+            <div class="avatar">👤</div>
         </div>
-        <div class="stat-line">
-            <div class="label">SOLDIER UID</div>
-            <div class="value" id="prof-uid">---</div>
+        <div class="user-stats">
+            <div class="stat-item"><b>12</b><span>Wars</span></div>
+            <div class="stat-item"><b>450</b><span>Kills</span></div>
+            <div class="stat-item"><b>7</b><span>Clans</span></div>
         </div>
-        <div class="stat-line">
-            <div class="label">RANK</div>
-            <div class="value">RECRUIT</div>
-        </div>
+    </header>
 
-        <button id="logout-btn" class="logout-danger">ABANDON POST (LOGOUT)</button>
+    <section class="profile-info">
+        <h2 class="username" id="display-email">RECRUIT</h2>
+        <div class="bio">
+            <p>PROJECT MAYHEM OPERATIVE</p>
+            <p style="color: #666; font-size: 0.7rem;" id="display-uid">UID: ---</p>
+        </div>
+    </section>
+
+    <div class="action-btns">
+        <div class="btn">Edit Profile</div>
+        <div class="btn btn-logout" id="logout-btn">Log Out</div>
+    </div>
+
+    <div class="achievement-grid">
+        <div class="grid-item">🎖️</div>
+        <div class="grid-item">⚔️</div>
+        <div class="grid-item">🔥</div>
+        <div class="grid-item">💣</div>
+        <div class="grid-item">🗡️</div>
+        <div class="grid-item">🛡️</div>
     </div>
 
     <div id="nav-placeholder"></div>
@@ -54,7 +47,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Use your existing config
         const firebaseConfig = {
             apiKey: "AIzaSyCUM-UWPTMi_lVSOROrzkkp5ceZrh67Ev0",
             authDomain: "clanhub-82f8c.firebaseapp.com",
@@ -70,8 +62,8 @@
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.body.style.display = "block";
-                document.getElementById('prof-email').textContent = user.email.toUpperCase();
-                document.getElementById('prof-uid').textContent = user.uid;
+                document.getElementById('display-email').textContent = user.email.split('@')[0].toUpperCase();
+                document.getElementById('display-uid').textContent = "ID: " + user.uid.substring(0, 12) + "...";
             } else {
                 window.location.href = "login.html";
             }
@@ -80,13 +72,15 @@
         document.getElementById('logout-btn').addEventListener('click', () => {
             signOut(auth).then(() => { window.location.href = "login.html"; });
         });
-    </script>
 
-    <script>
+        // Load Nav
         fetch('nav.html')
-            .then(response => response.text())
+            .then(res => res.text())
             .then(data => {
                 document.getElementById('nav-placeholder').innerHTML = data;
+                // Highlight profile icon
+                const profLink = document.querySelector('a[href="profile.html"]');
+                if(profLink) profLink.classList.add('active');
             });
     </script>
 </body>
