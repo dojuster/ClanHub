@@ -1,211 +1,135 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Stardos+Stencil:wght@400;700&display=swap');
 
-/* ClanHub Color Palette - Cyberpunk / Terminal Theme */
 :root {
-    --primary-glow: #00ff41; /* Terminal Green */
-    --error-red: #ff4d4d;
-    --bg-dark: #080808;
-    --card-bg: #111111;
-    --text-main: #ffffff;
+    --fight-pink: #ff69b4; /* The Soap Color */
+    --blood-red: #8b0000;
+    --concrete: #1a1a1a;
+    --paper: #dcdcdc;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
 }
 
 body {
+    background-color: #050505;
+    background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+    background-size: 20px 20px; /* Gritty background pattern */
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background: var(--bg-dark);
+    font-family: 'Special Elite', system-ui;
     overflow: hidden;
 }
 
-/* The Animated Light Strip on top */
-.login-light {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 500px;
-    height: 10px;
-    background: var(--primary-glow);
-    border-radius: 20px;
-    box-shadow: 0 0 20px var(--primary-glow);
-}
-
-.login-box {
+.login-container {
+    width: 90%;
+    max-width: 400px;
+    padding: 40px 20px;
+    background: rgba(10, 10, 10, 0.95);
+    border: 2px solid #333;
+    box-shadow: 10px 10px 0px var(--blood-red);
     position: relative;
-    width: 400px;
-    height: 500px;
-    background: var(--card-bg);
-    border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #222;
 }
 
-h2 {
-    font-size: 2em;
-    color: var(--text-main);
+h1 {
+    font-family: 'Stardos Stencil', cursive;
+    font-size: 3.5rem;
+    color: var(--paper);
     text-align: center;
-    transition: .5s ease;
-    text-transform: uppercase;
-    letter-spacing: 3px;
+    line-height: 0.8;
 }
 
-/* Toggle Interaction: When checked, the "Terminal" wakes up */
-.input-check:checked~h2 {
-    color: var(--primary-glow);
-    text-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--primary-glow);
+.subtitle {
+    text-align: center;
+    color: var(--fight-pink);
+    font-size: 0.9rem;
+    letter-spacing: 5px;
+    margin-bottom: 40px;
 }
 
-.input-box {
-    position: relative;
-    width: 310px;
-    margin: 30px 0;
+.input-group {
+    margin-bottom: 20px;
 }
 
-.input-box .input-line {
-    position: absolute;
-    bottom: -2px;
-    left: 0;
+input {
     width: 100%;
-    height: 2.5px;
-    background: #333;
-    transition: .5s ease;
-}
-
-.input-check:checked~.input-box .input-line {
-    background: var(--primary-glow);
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-
-.input-box label {
-    position: absolute;
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
-    font-size: 1em;
-    color: #888;
-    pointer-events: none;
-    transition: .5s ease;
-}
-
-.input-box input:focus~label,
-.input-box input:valid~label {
-    top: -5px;
-    color: var(--primary-glow);
-}
-
-.input-box input {
-    width: 100%;
-    height: 50px;
+    padding: 15px;
     background: transparent;
-    border: none;
+    border: 1px solid #444;
+    color: var(--paper);
+    font-family: inherit;
+    font-size: 1.1rem;
     outline: none;
-    font-size: 1em;
-    color: var(--text-main);
-    padding: 0 35px 0 5px;
+    transition: 0.3s;
 }
 
-.input-box .icon {
-    position: absolute;
-    right: 8px;
-    color: #555;
-    font-size: 1.2em;
-    line-height: 57px;
-    transition: .5s ease;
-}
-
-.input-check:checked~.input-box .icon {
-    color: var(--primary-glow);
-    filter: drop-shadow(0 0 5px var(--primary-glow));
+input:focus {
+    border-color: var(--fight-pink);
+    background: rgba(255, 105, 180, 0.05);
 }
 
 button {
     width: 100%;
-    height: 45px;
-    background: #222;
-    border: 1px solid #444;
-    outline: none;
-    border-radius: 5px;
+    padding: 15px;
+    background: var(--paper);
+    border: none;
+    font-family: 'Stardos Stencil', cursive;
+    font-size: 1.5rem;
+    font-weight: bold;
     cursor: pointer;
-    font-size: 1em;
-    color: var(--text-main);
-    font-weight: 500;
-    transition: .5s ease;
-    text-transform: uppercase;
+    transition: 0.2s;
+    margin-top: 10px;
 }
 
-.input-check:checked~button {
-    background: var(--primary-glow);
-    color: #000;
-    font-weight: 700;
-    box-shadow: 0 0 15px var(--primary-glow);
+button:hover {
+    background: var(--fight-pink);
+    transform: translate(-3px, -3px);
+    box-shadow: 5px 5px 0px #000;
 }
 
-/* The Beam Light Effect */
-.light {
+button:active {
+    transform: translate(0, 0);
+    box-shadow: none;
+}
+
+.form-footer {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 0.8rem;
+}
+
+.form-footer a {
+    color: #666;
+    text-decoration: none;
+}
+
+.form-footer a:hover {
+    color: var(--fight-pink);
+}
+
+.register {
+    margin-top: 20px;
+    color: var(--paper);
+}
+
+#error-message {
+    color: var(--blood-red);
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+/* Gritty Blood Effect Overlay */
+.blood-splatter {
     position: absolute;
-    top: -200%;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 950px;
-    background: linear-gradient(to bottom, rgba(0, 255, 65, 0.15) -50%, transparent 90%);
-    clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/black-paper.png');
     pointer-events: none;
-    transition: .6s ease-in-out;
-}
-
-.input-check:checked~.light {
-    top: -90%;
-}
-
-/* Toggle Switch Styling */
-.toggle {
-    position: absolute;
-    top: 20px;
-    right: -70px;
-    width: 60px;
-    height: 120px;
-    background: #111;
-    border-radius: 10px;
-    border: 1px solid #222;
-}
-
-.toggle::after {
-    content: '';
-    position: absolute;
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 45px;
-    height: 45px;
-    background: #222;
-    border: 2px solid #333;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: .5s ease;
-}
-
-.input-check:checked~.toggle::after {
-    top: 65px;
-    background: var(--primary-glow);
-    box-shadow: 0 0 10px var(--primary-glow);
-}
-
-.input-check {
-    position: absolute;
-    right: -70px;
-    z-index: 2;
-    opacity: 0;
-    width: 60px;
-    height: 120px;
-    cursor: pointer;
+    opacity: 0.3;
 }
