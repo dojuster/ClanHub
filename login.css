@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Stardos+Stencil:wght@400;700&display=swap');
 
 :root {
-    --fight-pink: #ff1493; /* Brighter Deep Pink for visibility */
-    --blood-red: #cc0000;
-    --concrete: #1a1a1a;
-    --paper: #ffffff; /* Pure white for high contrast */
+    --neon-pink: #ff1493;
+    --neon-blue: #00f7ff;
+    --bg-black: #000000;
 }
 
 * {
@@ -14,7 +13,7 @@
 }
 
 body {
-    background-color: #000000;
+    background-color: var(--bg-black);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -25,83 +24,96 @@ body {
 .login-container {
     width: 90%;
     max-width: 400px;
-    padding: 40px 20px;
+    padding: 40px 25px;
     background: #0a0a0a;
-    border: 3px solid var(--paper); /* Thick border for industrial look */
-    box-shadow: 12px 12px 0px var(--blood-red);
+    border: 2px solid #222;
+    box-shadow: 10px 10px 0px var(--neon-pink);
 }
 
 h1 {
     font-family: 'Stardos Stencil', cursive;
-    font-size: 3.5rem;
-    color: var(--paper); /* Changed to white for visibility */
+    font-size: 3rem;
+    color: #fff;
     text-align: center;
-    line-height: 1;
     margin-bottom: 5px;
-    text-transform: uppercase;
 }
 
 .subtitle {
     text-align: center;
-    color: var(--fight-pink);
-    font-size: 1rem;
-    font-weight: bold;
+    color: var(--neon-pink);
+    font-size: 0.8rem;
     letter-spacing: 4px;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
 }
 
+/* Floating Label Logic */
 .input-group {
-    margin-bottom: 15px;
+    position: relative;
+    margin-bottom: 30px;
 }
 
-input {
+.input-group input {
     width: 100%;
-    padding: 18px; /* Bigger for mobile users */
-    background: #111;
-    border: 2px solid #333;
-    color: white;
-    font-family: inherit;
-    font-size: 1.2rem;
+    height: 60px;
+    background: transparent;
+    border: 1.5px solid #333;
+    border-radius: 5px;
     outline: none;
+    font-size: 1rem;
+    color: #fff;
+    padding: 0 15px;
+    transition: 0.5s;
 }
 
-input:focus {
-    border-color: var(--fight-pink);
-    background: #000;
+.input-group label {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: #888;
+    pointer-events: none;
+    transition: 0.5s;
+    background: #0a0a0a; /* Matches container bg */
+    padding: 0 5px;
+}
+
+/* Animation Trigger */
+.input-group input:focus,
+.input-group input:valid {
+    border-color: var(--neon-blue);
+}
+
+.input-group input:focus~label,
+.input-group input:valid~label {
+    top: 0;
+    font-size: 0.8rem;
+    color: var(--neon-blue);
+    text-shadow: 0 0 5px var(--neon-blue);
 }
 
 button {
     width: 100%;
-    padding: 18px;
-    background: var(--paper);
+    padding: 15px;
+    background: #fff;
     border: none;
     font-family: 'Stardos Stencil', cursive;
-    font-size: 1.8rem;
-    color: #000;
-    font-weight: 900;
+    font-size: 1.5rem;
     cursor: pointer;
-    margin-top: 15px;
-    text-transform: uppercase;
+    transition: 0.3s;
+    margin-top: 10px;
 }
 
-button:active {
-    background: var(--fight-pink);
-    transform: scale(0.98);
+button:hover {
+    background: var(--neon-pink);
+    color: #000;
 }
 
 .form-footer {
-    margin-top: 25px;
+    margin-top: 20px;
     text-align: center;
-    color: #888;
+    color: #555;
+    font-size: 0.8rem;
 }
 
-.form-footer a {
-    color: var(--fight-pink);
-    text-decoration: underline;
-    font-weight: bold;
-}
-
-.register {
-    margin-top: 15px;
-    color: white;
-}
+.form-footer a { color: var(--neon-pink); text-decoration: none; }
