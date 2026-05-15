@@ -1,18 +1,18 @@
 <style>
     :root {
         --fight-pink: #ff1493;
-        --nav-bg: rgba(10, 10, 10, 0.9); /* Transparent for "Glass" look */
+        --nav-bg: rgba(10, 10, 10, 0.9);
         --neon-shadow: 0 0 15px #ff1493;
     }
 
     .bottom-nav {
         position: fixed;
-        bottom: 15px; /* Floating look for mobile */
+        bottom: 15px;
         left: 5%;
         width: 90%;
         height: 65px;
         background: var(--nav-bg);
-        backdrop-filter: blur(10px); /* Modern blur effect */
+        backdrop-filter: blur(10px);
         border: 1px solid #333;
         border-radius: 20px;
         display: flex;
@@ -20,78 +20,41 @@
         align-items: center;
         z-index: 9999;
         font-family: 'Special Elite', cursive;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .nav-item {
-        position: relative;
         text-decoration: none;
         color: #777;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         width: 25%;
-        height: 100%;
-        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* The Moving Indicator Line */
-    .nav-item.active::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        width: 40%;
-        height: 4px;
-        background: var(--fight-pink);
-        border-radius: 0 0 5px 5px;
-        box-shadow: var(--neon-shadow);
+        transition: 0.3s;
     }
 
     .nav-item.active {
         color: var(--fight-pink);
-        transform: translateY(-5px); /* Bounces up when active */
+        transform: translateY(-5px);
     }
 
-    .nav-item span { 
-        font-size: 1.6rem; 
-        transition: 0.3s;
-    }
-
-    .nav-item.active span {
-        filter: drop-shadow(var(--neon-shadow));
-    }
-
-    .nav-item small { 
-        font-size: 0.6rem; 
-        text-transform: uppercase; 
-        font-weight: bold;
-        margin-top: 4px;
-    }
-</style>
-
-<style>
-    /* ... existing styles ... */
-    .nav-item.profile-active {
-        color: var(--fight-pink);
-        text-shadow: var(--neon-shadow);
-    }
+    .nav-item span { font-size: 1.6rem; }
+    .nav-item small { font-size: 0.6rem; text-transform: uppercase; font-weight: bold; }
 </style>
 
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item">
+    <a href="index.html" class="nav-item" id="link-war">
         <span>🥊</span>
         <small>WAR ROOM</small>
     </a>
-    <a href="clan.html" class="nav-item">
+    <a href="clan.html" class="nav-item" id="link-clan">
         <span>👥</span>
         <small>CLAN</small>
     </a>
-    <a href="stats.html" class="nav-item">
+    <a href="stats.html" class="nav-item" id="link-stats">
         <span>💀</span>
         <small>STATS</small>
     </a>
-    <a href="profile.html" class="nav-item" id="nav-profile">
+    <a href="profile.html" class="nav-item" id="link-profile">
         <span>👤</span>
         <small>PROFILE</small>
     </a>
