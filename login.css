@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ClanHub Color Palette - Cyberpunk / Terminal Theme */
+:root {
+    --primary-glow: #00ff41; /* Terminal Green */
+    --error-red: #ff4d4d;
+    --bg-dark: #080808;
+    --card-bg: #111111;
+    --text-main: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--bg-dark);
+    overflow: hidden;
+}
+
+/* The Animated Light Strip on top */
+.login-light {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 10px;
+    background: var(--primary-glow);
+    border-radius: 20px;
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.login-box {
+    position: relative;
+    width: 400px;
+    height: 500px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #222;
+}
+
+h2 {
+    font-size: 2em;
+    color: var(--text-main);
+    text-align: center;
+    transition: .5s ease;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+/* Toggle Interaction: When checked, the "Terminal" wakes up */
+.input-check:checked~h2 {
+    color: var(--primary-glow);
+    text-shadow: 0 0 15px var(--primary-glow), 0 0 30px var(--primary-glow);
+}
+
+.input-box {
+    position: relative;
+    width: 310px;
+    margin: 30px 0;
+}
+
+.input-box .input-line {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2.5px;
+    background: #333;
+    transition: .5s ease;
+}
+
+.input-check:checked~.input-box .input-line {
+    background: var(--primary-glow);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.input-box label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color: #888;
+    pointer-events: none;
+    transition: .5s ease;
+}
+
+.input-box input:focus~label,
+.input-box input:valid~label {
+    top: -5px;
+    color: var(--primary-glow);
+}
+
+.input-box input {
+    width: 100%;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: var(--text-main);
+    padding: 0 35px 0 5px;
+}
+
+.input-box .icon {
+    position: absolute;
+    right: 8px;
+    color: #555;
+    font-size: 1.2em;
+    line-height: 57px;
+    transition: .5s ease;
+}
+
+.input-check:checked~.input-box .icon {
+    color: var(--primary-glow);
+    filter: drop-shadow(0 0 5px var(--primary-glow));
+}
+
+button {
+    width: 100%;
+    height: 45px;
+    background: #222;
+    border: 1px solid #444;
+    outline: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    color: var(--text-main);
+    font-weight: 500;
+    transition: .5s ease;
+    text-transform: uppercase;
+}
+
+.input-check:checked~button {
+    background: var(--primary-glow);
+    color: #000;
+    font-weight: 700;
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+/* The Beam Light Effect */
+.light {
+    position: absolute;
+    top: -200%;
+    left: 0;
+    width: 100%;
+    height: 950px;
+    background: linear-gradient(to bottom, rgba(0, 255, 65, 0.15) -50%, transparent 90%);
+    clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    pointer-events: none;
+    transition: .6s ease-in-out;
+}
+
+.input-check:checked~.light {
+    top: -90%;
+}
+
+/* Toggle Switch Styling */
+.toggle {
+    position: absolute;
+    top: 20px;
+    right: -70px;
+    width: 60px;
+    height: 120px;
+    background: #111;
+    border-radius: 10px;
+    border: 1px solid #222;
+}
+
+.toggle::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45px;
+    height: 45px;
+    background: #222;
+    border: 2px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: .5s ease;
+}
+
+.input-check:checked~.toggle::after {
+    top: 65px;
+    background: var(--primary-glow);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.input-check {
+    position: absolute;
+    right: -70px;
+    z-index: 2;
+    opacity: 0;
+    width: 60px;
+    height: 120px;
+    cursor: pointer;
+}
