@@ -1,0 +1,57 @@
+<style>
+    :root {
+        --fight-pink: #ff1493;
+        --nav-bg: #0a0a0a;
+    }
+
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70px;
+        background: var(--nav-bg);
+        border-top: 3px solid #ffffff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 9999;
+        font-family: 'Special Elite', cursive;
+    }
+
+    .nav-item {
+        text-decoration: none;
+        color: #555;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: 0.2s;
+    }
+
+    .nav-item.active {
+        color: var(--fight-pink);
+        text-shadow: 0 0 10px var(--fight-pink);
+    }
+
+    .nav-item span { font-size: 1.4rem; }
+    .nav-item small { font-size: 0.65rem; text-transform: uppercase; font-weight: bold; }
+</style>
+
+<div class="bottom-nav">
+    <a href="index.html" class="nav-item active">
+        <span>🥊</span>
+        <small>WAR ROOM</small>
+    </a>
+    <a href="clan.html" class="nav-item">
+        <span>👥</span>
+        <small>CLAN</small>
+    </a>
+    <a href="stats.html" class="nav-item">
+        <span>💀</span>
+        <small>STATS</small>
+    </a>
+    <a href="#" id="logout-btn" class="nav-item">
+        <span>🚪</span>
+        <small>EXIT</small>
+    </a>
+</div>

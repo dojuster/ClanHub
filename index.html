@@ -61,5 +61,23 @@
             signOut(auth).then(() => { window.location.href = "login.html"; });
         });
     </script>
+    <div id="nav-placeholder"></div>
+
+<script>
+    // Fetch and inject the nav bar
+    fetch('nav.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('nav-placeholder').innerHTML = data;
+            
+            // Re-bind the logout button logic after the nav is loaded
+            const logoutBtn = document.getElementById('logout-btn');
+            if(logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                   // Your auth.js logout code here
+                });
+            }
+        });
+</script>
 </body>
 </html>
