@@ -2,19 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ClanHub | Dashboard</title>
     <style>
-        /* Hide the page initially to prevent flashing private data */
-        body { display: none; background-color: #1a1a1a; color: white; font-family: sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            display: none; 
+            background-color: #000; 
+            color: white; 
+            font-family: 'Special Elite', sans-serif;
+            min-height: 100vh; /* Uses full phone height */
+            width: 100vw;  /* Uses full phone width */
+            padding: 20px;
+        }
+
+        #dashboard-content {
+            width: 100%;
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        /* Prevent content from hiding under the bottom nav bar */
+        body { padding-bottom: 80px; } 
     </style>
 </head>
 <body>
 
     <div id="dashboard-content">
-        <h1>ClanHub Dashboard</h1>
-        <p>Logged in as: <span id="user-display">Loading...</span></p>
-        <button id="logout-btn">Logout</button>
+        <h1>WAR ROOM</h1>
+        <p style="color: #ff1493; margin: 10px 0;">IDENTITY: <span id="user-display">VERIFYING...</span></p>
     </div>
+
+    <div id="nav-placeholder"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -36,48 +56,37 @@
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // 1. IMMEDIATELY show the body so the screen isn't white
                 document.body.style.display = "block";
                 document.getElementById('user-display').textContent = user.email;
 
-                // 2. Attempt to update Firestore (wrapped in try/catch)
                 try {
                     await setDoc(doc(db, "active_members", user.uid), {
                         email: user.email,
                         last_seen: serverTimestamp(),
                         status: "Online"
                     }, { merge: true });
-                    console.log("Status updated in Firestore");
                 } catch (e) {
-                    console.error("Firestore Error (Check your Rules!):", e);
+                    console.error("Firestore Error:", e);
                 }
             } else {
-                // Not logged in
                 window.location.href = "login.html";
             }
         });
 
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            signOut(auth).then(() => { window.location.href = "login.html"; });
-        });
-    </script>
-    <div id="nav-placeholder"></div>
-
-<script>
-    // Fetch and inject the nav bar
-    fetch('nav.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('nav-placeholder').innerHTML = data;
-            
-            // Re-bind the logout button logic after the nav is loaded
-            const logoutBtn = document.getElementById('logout-btn');
-            if(logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                   // Your auth.js logout code here
-                });
+        // Delegate logout for injected nav bar
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'logout-btn' || e.target.closest('#logout-btn')) {
+                signOut(auth).then(() => { window.location.href = "login.html"; });
             }
         });
-</script>
+    </script>
+
+    <script>
+        fetch('nav.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('nav-placeholder').innerHTML = data;
+            });
+    </script>
 </body>
 </html>
