@@ -70,8 +70,16 @@
     }
 </style>
 
+<style>
+    /* ... existing styles ... */
+    .nav-item.profile-active {
+        color: var(--fight-pink);
+        text-shadow: var(--neon-shadow);
+    }
+</style>
+
 <div class="bottom-nav">
-    <a href="index.html" class="nav-item active">
+    <a href="index.html" class="nav-item">
         <span>🥊</span>
         <small>WAR ROOM</small>
     </a>
@@ -83,8 +91,8 @@
         <span>💀</span>
         <small>STATS</small>
     </a>
-    <a href="#" id="logout-btn" class="nav-item">
-        <span>🚪</span>
-        <small>EXIT</small>
+    <a href="profile.html" class="nav-item" id="nav-profile">
+        <span>👤</span>
+        <small>PROFILE</small>
     </a>
 </div>
