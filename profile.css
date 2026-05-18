@@ -1,24 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 1. INITIAL SYSTEM STATE (LIGHT THEME) */
 :root {
-    --app-bg: #f8f9fa;
-    --text-primary: #000000;
-    --text-secondary: #71717a;
-    --card-surface: #ededed;
-    --roster-container-bg: #ffffff;
-    --border-color: #e4e4e7;
-    --logout-danger: #ef4444;
+    --app-bg: #000000;
+    --text-primary: #ffffff;
+    --text-secondary: #a1a1aa;
+    --card-surface: #121214;
+    --roster-container-bg: #18181c;
+    --border-color: #27272a;
+    --logout-danger: #ff1493; /* Using your signature pink for the signout */
 }
 
-/* 2. AUTOMATIC DARK THEME MEDIA QUERIES */
-@media (prefers-color-scheme: dark) {
+/* Force dark theme layout even if browser overrides */
+@media (prefers-color-scheme: light) {
     :root {
-        --app-bg: #09090b;
+        --app-bg: #000000;
         --text-primary: #ffffff;
         --text-secondary: #a1a1aa;
-        --card-surface: #18181b;
-        --roster-container-bg: #111113;
+        --card-surface: #121214;
+        --roster-container-bg: #18181c;
         --border-color: #27272a;
     }
 }
@@ -31,101 +30,105 @@
 }
 
 body {
-    background-color: var(--app-bg);
-    color: var(--text-primary);
+    background-color: var(--app-bg) !important;
+    color: var(--text-primary) !important;
     min-height: 100vh;
-    padding-bottom: 90px; /* Clear height workspace for bottom navigation */
-    transition: background-color 0.25s, color 0.25s;
+    padding: 20px 15px 120px 15px; /* Added massive bottom padding so content clears the bottom nav */
 }
 
 .main-wrapper {
     width: 100%;
-    padding: 16px;
+    max-width: 480px; /* Perfect sizing for mobile and centered on desktop */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .page-title {
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 20px;
-    margin-top: 10px;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
 }
 
-/* Featured Top Profile Block */
+/* Profile Card Container */
 .user-featured-card {
     background-color: var(--card-surface);
-    border-radius: 14px;
-    padding: 20px 16px;
-    margin-bottom: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px 20px;
+    margin-bottom: 28px;
 }
 
 .user-card-layout {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
 }
 
 .large-avatar {
-    width: 64px;
-    height: 64px;
-    background-color: var(--border-color);
+    width: 68px;
+    height: 68px;
+    background-color: #27272a;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.75rem;
+    font-size: 2rem;
 }
 
 .user-meta {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .user-display-name {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.3px;
 }
 
 .user-display-sub {
     font-size: 0.85rem;
     color: var(--text-secondary);
+    font-family: monospace; /* Clean look for IDs */
 }
 
-/* Clan Header Branding Area */
+/* Clan Branding Section */
 .section-header {
-    margin-bottom: 14px;
-    padding: 0 4px;
+    margin-bottom: 16px;
 }
 
 .clan-branding {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
 }
 
 .mini-clan-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     background-color: var(--card-surface);
+    border: 1px solid var(--border-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
 .clan-title-box h3 {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .edit-icon {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     cursor: pointer;
-    opacity: 0.7;
 }
 
 .clan-id-label {
@@ -133,20 +136,20 @@ body {
     color: var(--text-secondary);
 }
 
-/* Main Roster White Card Box */
+/* Roster List Container */
 .roster-card {
     background-color: var(--roster-container-bg);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 8px 16px;
-    margin-bottom: 24px;
+    border-radius: 16px;
+    padding: 8px 20px;
+    margin-bottom: 28px;
 }
 
 .member-row {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 0;
+    gap: 16px;
+    padding: 16px 0;
 }
 
 .member-row:not(:last-child) {
@@ -154,8 +157,8 @@ body {
 }
 
 .member-avatar {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     background-color: var(--card-surface);
     border-radius: 50%;
     display: flex;
@@ -165,33 +168,33 @@ body {
 }
 
 .member-info h4 {
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1rem;
+    font-weight: 600;
     margin-bottom: 2px;
 }
 
 .member-info p {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
 }
 
-/* System Logout Layout */
+/* Logout Button styling */
 .system-btn-logout {
     width: 100%;
-    height: 48px;
+    height: 52px;
     background: transparent;
     border: 1px solid var(--logout-danger);
     color: var(--logout-danger);
     font-weight: 600;
-    font-size: 0.9rem;
-    border-radius: 10px;
+    font-size: 0.95rem;
+    border-radius: 12px;
     cursor: pointer;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: background 0.2s;
-    margin-top: 10px;
+    transition: all 0.2s;
+    margin-bottom: 20px;
 }
 
 .system-btn-logout:active {
-    background-color: rgba(239, 68, 68, 0.1);
+    background-color: rgba(255, 20, 147, 0.1);
 }

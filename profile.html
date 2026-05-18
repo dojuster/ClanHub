@@ -39,7 +39,6 @@
                     <p>email@fakedomain.net</p>
                 </div>
             </div>
-            
             <div class="member-row">
                 <div class="member-avatar">👤</div>
                 <div class="member-info">
@@ -47,7 +46,6 @@
                     <p>email@fakedomain.net</p>
                 </div>
             </div>
-
             <div class="member-row">
                 <div class="member-avatar">👤</div>
                 <div class="member-info">
@@ -55,7 +53,6 @@
                     <p>email@fakedomain.net</p>
                 </div>
             </div>
-
             <div class="member-row">
                 <div class="member-avatar">👤</div>
                 <div class="member-info">
@@ -63,7 +60,6 @@
                     <p>djpark@gmail.com</p>
                 </div>
             </div>
-
             <div class="member-row">
                 <div class="member-avatar">👤</div>
                 <div class="member-info">
@@ -98,7 +94,7 @@
             if (user) {
                 document.body.style.display = "block";
                 document.getElementById('display-email').textContent = user.email.split('@')[0].toUpperCase();
-                document.getElementById('display-uid').textContent = "ID: " + user.uid.substring(0, 12) + "...";
+                document.getElementById('display-uid').textContent = "ID: " + user.uid.substring(0, 12);
             } else {
                 window.location.href = "login.html";
             }
@@ -113,7 +109,11 @@
             .then(data => {
                 document.getElementById('nav-placeholder').innerHTML = data;
                 const profLink = document.querySelector('a[href="profile.html"]');
-                if(profLink) profLink.classList.add('active');
+                if(profLink) {
+                    // Strip other actives and keep profile pink
+                    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                    profLink.classList.add('active');
+                }
             });
     </script>
 </body>
