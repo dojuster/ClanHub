@@ -8,29 +8,39 @@
 </head>
 <body>
 
-    <div class="login-container">
+    <div class="main-wrapper">
+        <header class="app-header">
+            <h1 class="brand-title">ClanHub</h1>
+            <p class="brand-subtitle">Enter your email to sign up for this app</p>
+        </header>
+
         <form id="login-form">
-            <h1 class="glitch">CLANHUB</h1>
-            <p class="subtitle">PROJECT MAYHEM</p>
-
-            <div class="input-group">
-                <input type="email" id="login-email" required>
-                <label>EMAIL ADDRESS</label>
+            <div class="input-field-wrapper">
+                <input type="email" id="login-email" placeholder="email@domain.com" required>
             </div>
 
-            <div class="input-group">
-                <input type="password" id="login-password" required>
-                <label>PASSWORD</label>
+            <div class="input-field-wrapper">
+                <input type="password" id="login-password" placeholder="password" required>
             </div>
 
-            <button type="submit" id="login-btn">ENTER THE RING</button>
-            
-            <div class="form-footer">
-                <p id="error-message"></p>
-                <div class="register">
-                    NOT A MEMBER? <a href="#">JOIN THE CLAN</a>
-                </div>
+            <div class="divider"><span>or</span></div>
+
+            <div class="social-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google">
+                <span>Continue with Google</span>
             </div>
+
+            <div class="social-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" class="apple-icon" alt="Apple">
+                <span>Continue with Apple</span>
+            </div>
+
+            <p class="terms-text">
+                By clicking continue, you agree to our <b>Terms of Service</b> and <b>Privacy Policy</b>
+            </p>
+
+            <button type="submit" id="login-btn">Continue</button>
+            <p id="error-message"></p>
         </form>
     </div>
 
