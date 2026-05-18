@@ -1,111 +1,197 @@
-/* profile.css */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* 1. INITIAL SYSTEM STATE (LIGHT THEME) */
 :root {
-    --neon-pink: #ff0055;
-    --neon-blue: #00f7ff;
-    --cyber-bg: #050505;
-    --card-bg: #111;
+    --app-bg: #f8f9fa;
+    --text-primary: #000000;
+    --text-secondary: #71717a;
+    --card-surface: #ededed;
+    --roster-container-bg: #ffffff;
+    --border-color: #e4e4e7;
+    --logout-danger: #ef4444;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* 2. AUTOMATIC DARK THEME MEDIA QUERIES */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --app-bg: #09090b;
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1aa;
+        --card-surface: #18181b;
+        --roster-container-bg: #111113;
+        --border-color: #27272a;
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
 
 body {
-    background-color: var(--cyber-bg);
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    padding-bottom: 100px; /* Space for Nav */
+    background-color: var(--app-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding-bottom: 90px; /* Clear height workspace for bottom navigation */
+    transition: background-color 0.25s, color 0.25s;
 }
 
-/* Header Section */
-.profile-header {
-    display: flex;
-    align-items: center;
-    padding: 25px 15px;
-    gap: 20px;
-}
-
-.avatar-wrapper {
-    position: relative;
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    padding: 3px;
-    background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
-}
-
-.avatar {
+.main-wrapper {
     width: 100%;
-    height: 100%;
-    background: #222;
+    padding: 16px;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+/* Featured Top Profile Block */
+.user-featured-card {
+    background-color: var(--card-surface);
+    border-radius: 14px;
+    padding: 20px 16px;
+    margin-bottom: 24px;
+}
+
+.user-card-layout {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.large-avatar {
+    width: 64px;
+    height: 64px;
+    background-color: var(--border-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1.75rem;
 }
 
-.user-stats {
+.user-meta {
     display: flex;
-    flex-grow: 1;
-    justify-content: space-around;
-    text-align: center;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.stat-item b { display: block; font-size: 1.2rem; color: var(--neon-blue); }
-.stat-item span { font-size: 0.7rem; text-transform: uppercase; color: #888; }
-
-/* Info/Bio Section */
-.profile-info {
-    padding: 0 20px 20px;
+.user-display-name {
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
-.username {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1rem;
-    color: var(--neon-pink);
-    margin-bottom: 5px;
+.user-display-sub {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
-.bio { font-size: 0.9rem; color: #ccc; line-height: 1.4; }
+/* Clan Header Branding Area */
+.section-header {
+    margin-bottom: 14px;
+    padding: 0 4px;
+}
 
-/* Action Buttons */
-.action-btns {
+.clan-branding {
     display: flex;
-    gap: 10px;
-    padding: 0 20px;
-    margin-bottom: 25px;
+    align-items: center;
+    gap: 12px;
 }
 
-.btn {
-    flex: 1;
-    padding: 10px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    color: #fff;
-    font-weight: bold;
-    text-align: center;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-}
-
-.btn-logout { border-color: var(--neon-pink); color: var(--neon-pink); }
-
-/* Grid Section (Instagram Style) */
-.achievement-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    border-top: 1px solid #222;
-}
-
-.grid-item {
-    aspect-ratio: 1/1;
-    background: #111;
+.mini-clan-icon {
+    width: 48px;
+    height: 48px;
+    background-color: var(--card-surface);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    border: 1px solid #1a1a1a;
+    font-size: 1.3rem;
+}
+
+.clan-title-box h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.edit-icon {
+    font-size: 0.9rem;
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.clan-id-label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* Main Roster White Card Box */
+.roster-card {
+    background-color: var(--roster-container-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 8px 16px;
+    margin-bottom: 24px;
+}
+
+.member-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 0;
+}
+
+.member-row:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.member-avatar {
+    width: 42px;
+    height: 42px;
+    background-color: var(--card-surface);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.member-info h4 {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.member-info p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* System Logout Layout */
+.system-btn-logout {
+    width: 100%;
+    height: 48px;
+    background: transparent;
+    border: 1px solid var(--logout-danger);
+    color: var(--logout-danger);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.system-btn-logout:active {
+    background-color: rgba(239, 68, 68, 0.1);
 }

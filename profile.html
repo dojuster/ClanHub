@@ -3,42 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ClanHub | Soldier Profile</title>
+    <title>ClanHub | Profile</title>
     <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
-    <header class="profile-header">
-        <div class="avatar-wrapper">
-            <div class="avatar">👤</div>
-        </div>
-        <div class="user-stats">
-            <div class="stat-item"><b>12</b><span>Wars</span></div>
-            <div class="stat-item"><b>450</b><span>Kills</span></div>
-            <div class="stat-item"><b>7</b><span>Clans</span></div>
-        </div>
-    </header>
+    <div class="main-wrapper">
+        <h1 class="page-title">Profile</h1>
 
-    <section class="profile-info">
-        <h2 class="username" id="display-email">RECRUIT</h2>
-        <div class="bio">
-            <p>PROJECT MAYHEM OPERATIVE</p>
-            <p style="color: #666; font-size: 0.7rem;" id="display-uid">UID: ---</p>
+        <div class="user-featured-card">
+            <div class="user-card-layout">
+                <div class="large-avatar">👤</div>
+                <div class="user-meta">
+                    <h2 class="user-display-name" id="display-email">LOADING...</h2>
+                    <p class="user-display-sub" id="display-uid">UID: ---</p>
+                </div>
+            </div>
         </div>
-    </section>
 
-    <div class="action-btns">
-        <div class="btn">Edit Profile</div>
-        <div class="btn btn-logout" id="logout-btn">Log Out</div>
-    </div>
+        <div class="section-header">
+            <div class="clan-branding">
+                <div class="mini-clan-icon">🍐</div>
+                <div class="clan-title-box">
+                    <h3>My Clan <span class="edit-icon">✏️</span></h3>
+                    <p class="clan-id-label">Clan id :-555971445221</p>
+                </div>
+            </div>
+        </div>
 
-    <div class="achievement-grid">
-        <div class="grid-item">🎖️</div>
-        <div class="grid-item">⚔️</div>
-        <div class="grid-item">🔥</div>
-        <div class="grid-item">💣</div>
-        <div class="grid-item">🗡️</div>
-        <div class="grid-item">🛡️</div>
+        <div class="roster-card">
+            <div class="member-row">
+                <div class="member-avatar">👤</div>
+                <div class="member-info">
+                    <h4>Elynn Lee</h4>
+                    <p>email@fakedomain.net</p>
+                </div>
+            </div>
+            
+            <div class="member-row">
+                <div class="member-avatar">👤</div>
+                <div class="member-info">
+                    <h4>Oscar Dum</h4>
+                    <p>email@fakedomain.net</p>
+                </div>
+            </div>
+
+            <div class="member-row">
+                <div class="member-avatar">👤</div>
+                <div class="member-info">
+                    <h4>Carlo Emilion</h4>
+                    <p>email@fakedomain.net</p>
+                </div>
+            </div>
+
+            <div class="member-row">
+                <div class="member-avatar">👤</div>
+                <div class="member-info">
+                    <h4>Daniel Jay Park</h4>
+                    <p>djpark@gmail.com</p>
+                </div>
+            </div>
+
+            <div class="member-row">
+                <div class="member-avatar">👤</div>
+                <div class="member-info">
+                    <h4>Mark Rojas</h4>
+                    <p>rojasmar@skiff.com</p>
+                </div>
+            </div>
+        </div>
+
+        <button id="logout-btn" class="system-btn-logout">Sign Out From Post</button>
     </div>
 
     <div id="nav-placeholder"></div>
@@ -73,12 +108,10 @@
             signOut(auth).then(() => { window.location.href = "login.html"; });
         });
 
-        // Load Nav
         fetch('nav.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('nav-placeholder').innerHTML = data;
-                // Highlight profile icon
                 const profLink = document.querySelector('a[href="profile.html"]');
                 if(profLink) profLink.classList.add('active');
             });
