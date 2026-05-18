@@ -1,24 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* LIGHT MODE SETUP (Matches reference screenshot perfectly) */
 :root {
-    --app-bg: #000000;
-    --text-primary: #ffffff;
-    --text-secondary: #a1a1aa;
-    --card-surface: #121214;
-    --roster-container-bg: #18181c;
-    --border-color: #27272a;
-    --logout-danger: #ff1493; /* Using your signature pink for the signout */
+    --bg-main: #ffffff;
+    --text-title: #000000;
+    --text-primary: #111111;
+    --text-secondary: #71717a;
+    --card-bg: #f4f4f5;
+    --roster-bg: #ffffff;
+    --border-color: #e4e4e7;
+    --logout-color: #ef4444;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
-/* Force dark theme layout even if browser overrides */
-@media (prefers-color-scheme: light) {
+/* NATIVE SYSTEM DARK MODE TRIGGER */
+@media (prefers-color-scheme: dark) {
     :root {
-        --app-bg: #000000;
-        --text-primary: #ffffff;
+        --bg-main: #09090b;
+        --text-title: #ffffff;
+        --text-primary: #f4f4f5;
         --text-secondary: #a1a1aa;
-        --card-surface: #121214;
-        --roster-container-bg: #18181c;
+        --card-bg: #18181b;
+        --roster-bg: #18181b;
         --border-color: #27272a;
+        --logout-color: #f43f5e;
+        --shadow-sm: 0 0 0 transparent;
+        --shadow-md: 0 0 0 transparent;
     }
 }
 
@@ -27,108 +35,126 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 body {
-    background-color: var(--app-bg) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
     min-height: 100vh;
-    padding: 20px 15px 120px 15px; /* Added massive bottom padding so content clears the bottom nav */
+    padding: 24px 16px 120px 16px; /* Extra bottom padding so your floating nav menu never blocks content */
+    display: flex;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .main-wrapper {
     width: 100%;
-    max-width: 480px; /* Perfect sizing for mobile and centered on desktop */
-    margin: 0 auto;
+    max-width: 420px; /* Constrains look perfectly to mobile viewport sizes */
     display: flex;
     flex-direction: column;
 }
 
 .page-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 700;
+    color: var(--text-title);
     margin-bottom: 24px;
     letter-spacing: -0.5px;
 }
 
-/* Profile Card Container */
+/* Featured Top Profile Card Block */
 .user-featured-card {
-    background-color: var(--card-surface);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 24px 20px;
+    background-color: var(--card-bg);
+    border-radius: 20px;
+    padding: 24px;
     margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
 }
 
 .user-card-layout {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
 }
 
 .large-avatar {
-    width: 68px;
-    height: 68px;
-    background-color: #27272a;
+    width: 72px;
+    height: 72px;
+    background-color: var(--border-color);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
+    color: var(--text-secondary);
 }
 
 .user-meta {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .user-display-name {
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     font-weight: 700;
+    color: var(--text-title);
     letter-spacing: -0.3px;
 }
 
 .user-display-sub {
     font-size: 0.85rem;
     color: var(--text-secondary);
-    font-family: monospace; /* Clean look for IDs */
 }
 
-/* Clan Branding Section */
+/* Clan Sub-header Configuration */
 .section-header {
     margin-bottom: 16px;
+    padding-left: 4px;
 }
 
 .clan-branding {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 16px;
 }
 
 .mini-clan-icon {
-    width: 44px;
-    height: 44px;
-    background-color: var(--card-surface);
-    border: 1px solid var(--border-color);
+    width: 52px;
+    height: 52px;
+    background-color: var(--card-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+}
+
+.clan-title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .clan-title-box h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-title);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .edit-icon {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.edit-icon:hover {
+    opacity: 1;
 }
 
 .clan-id-label {
@@ -136,13 +162,14 @@ body {
     color: var(--text-secondary);
 }
 
-/* Roster List Container */
+/* The Main Roster Container Card Block */
 .roster-card {
-    background-color: var(--roster-container-bg);
+    background-color: var(--roster-bg);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 8px 20px;
-    margin-bottom: 28px;
+    border-radius: 20px;
+    padding: 4px 20px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-md);
 }
 
 .member-row {
@@ -157,20 +184,27 @@ body {
 }
 
 .member-avatar {
-    width: 40px;
-    height: 40px;
-    background-color: var(--card-surface);
+    width: 44px;
+    height: 44px;
+    background-color: var(--card-bg);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+}
+
+.member-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
 }
 
 .member-info h4 {
     font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 2px;
+    color: var(--text-title);
 }
 
 .member-info p {
@@ -178,23 +212,22 @@ body {
     color: var(--text-secondary);
 }
 
-/* Logout Button styling */
+/* Logout Button Link Structure */
 .system-btn-logout {
     width: 100%;
     height: 52px;
-    background: transparent;
-    border: 1px solid var(--logout-danger);
-    color: var(--logout-danger);
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--logout-color);
     font-weight: 600;
     font-size: 0.95rem;
     border-radius: 12px;
     cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.2s;
-    margin-bottom: 20px;
+    transition: all 0.2s ease;
+    margin-top: auto;
 }
 
 .system-btn-logout:active {
-    background-color: rgba(255, 20, 147, 0.1);
+    background-color: var(--card-bg);
+    transform: scale(0.98);
 }
